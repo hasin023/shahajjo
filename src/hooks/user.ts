@@ -1,9 +1,10 @@
 import { atom, useAtom } from 'jotai';
 
 export type User = {
-    id: number;
+    id: string;
     name: string;
     email: string;
+    phoneNumber: string;
     isVerified: boolean;
     role: 'admin' | 'user';
 }

@@ -9,6 +9,8 @@ export type TokenPayload = {
   name: string;
   email: string;
   role: string;
+  isVerified: boolean;
+  phoneNumber?: string;
 };
 
 export function hashPassword(password: string): string {
@@ -29,6 +31,8 @@ export async function generateToken(user: TokenPayload): Promise<string> {
     id: user.id,
     name: user.name,
     email: user.email,
+    isVerified: user.isVerified,
+    phoneNumber: user.phoneNumber,
     role: user.role,
   })
     .setProtectedHeader({ alg: "HS256" })
@@ -105,8 +109,8 @@ export async function login(email: string, password: string) {
       name: user.name,
       email: user.email,
       isVerified: user.isVerified,
+      phoneNumber: user.phoneNumber,
       role: user.role,
-
     };
 
     const token = await generateToken(userInfo);
