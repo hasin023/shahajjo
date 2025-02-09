@@ -20,7 +20,7 @@ export default function Auth() {
     }
 
     return (
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto pt-12">
             <Tabs defaultValue="login">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="login">Login</TabsTrigger>
@@ -54,10 +54,6 @@ export default function Auth() {
                         <div>
                             <Label htmlFor="password">Password</Label>
                             <Input id="password" type="password" placeholder="Enter your password" required />
-                        </div>
-                        <div>
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input id="phone" type="tel" placeholder="Enter your phone number" required />
                         </div>
                         <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? "Registering..." : "Register"}
