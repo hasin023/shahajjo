@@ -20,11 +20,12 @@ export async function POST(request: NextRequest) {
         const lng = formData.get('lng');
         const images = formData.getAll('images') as File[];
 
-        if (!title || !description || !location_name || !location_name || !images) {
+        if (!title || !description || !location_name || !location_name) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
-        const imageUrls = await uploadAllImagesParallel(images);
-        console.log(imageUrls);
+        let imageUrls:string[] = [];
+        if(images.length !== 0 && images[0].size) imageUrls = await uploadAllImagesParallel(images);
+
         await dbConnect();
         const report = await CrimeReport.create({
             reportedBy,
