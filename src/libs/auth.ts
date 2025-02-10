@@ -61,18 +61,18 @@ export const getProfile = async (token: string) => {
   }
 }
 
-export const getAuth = async (req:NextRequest, type='cookie') => {
-    if(type === 'cookie') {
-        const cookies = req.cookies;
-        const token = cookies.get('token');
-        if (!token) return null;
-        return await getProfile(token?.value) as any;
-    } else {
-        // Auth header (Bearer token)
-        const token = req.headers.get('Authorization');
-        if (!token) return null;
-        return await getProfile(token.split(' ')[1]) as any;
-    }
+export const getAuth = async (req: NextRequest, type = 'cookie') => {
+  if (type === 'cookie') {
+    const cookies = req.cookies;
+    const token = cookies.get('token');
+    if (!token) return null;
+    return await getProfile(token?.value) as any;
+  } else {
+    // Auth header (Bearer token)
+    const token = req.headers.get('Authorization');
+    if (!token) return null;
+    return await getProfile(token.split(' ')[1]) as any;
+  }
 }
 
 export async function register(name: string, email: string, password: string) {
@@ -114,7 +114,7 @@ export async function login(email: string, password: string) {
     };
 
     const token = await generateToken(userInfo);
-    return { token, user:userInfo };
+    return { token, user: userInfo };
   } else throw Error("Invalid email or password.");
 }
 

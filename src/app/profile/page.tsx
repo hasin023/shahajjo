@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 import { userUserLoaded, useUser } from "@/hooks/user";
+
+import { createAvatar } from '@dicebear/core';
+import { shapes } from '@dicebear/collection';
+import { toPng } from '@dicebear/converter';
 
 const dummyUser = {
     name: "John Doe",
@@ -44,6 +48,23 @@ export default function Profile() {
     const [activeTab, setActiveTab] = useState("overview")
     const [user, setUser] = useUser();
     const [userLoaded, _] = userUserLoaded();
+    const [avatarUrl, setAvatarUrl] = useState<string>("/placeholder.svg");
+
+    useEffect(() => {
+        async function generateAvatar() {
+            if (!user) return;
+
+            const avatar = createAvatar(shapes, {
+                seed: user.name,
+            });
+            const svg = avatar.toString();
+            const png = await toPng(svg);
+            const avatarUri = await png.toDataUri();
+            setAvatarUrl(avatarUri);
+        }
+
+        generateAvatar();
+    }, [user?.name]);
 
     if (!userLoaded) return <div className="text-center">Loading...</div>;
     if (!user) return <div className="text-center">Not logged in</div>;
@@ -53,7 +74,7 @@ export default function Profile() {
             <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
                     <Avatar className="w-20 h-20">
-                        <AvatarImage src={dummyUser.avatar} alt={dummyUser.name} />
+                        <AvatarImage src={avatarUrl} alt={user.name} />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-grow">
