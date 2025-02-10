@@ -14,10 +14,16 @@ export function sendOTP(otp: string, phoneNumber: string) {
 }
 
 export function isPhoneNo(phoneNumber: string) {
-    const numStr = phoneNumber.toString();
-    // Regular expression to check if the number is 13 digits long and starts with '01'
-    const phoneRegex = /^88\d{11}$/;
-    return phoneRegex.test(numStr);
+    // Remove any whitespace, hyphens, or '+' from the input
+    const cleanNumber = phoneNumber.replace(/[\s\-\+]/g, '');
+
+    // Three possible formats:
+    // 1. Starting with '01' (local format): 11 digits total
+    // 2. Starting with '880' (international format without '+'): 13 digits total
+    // 3. Starting with '+880' (international format with '+'): 13 digits total
+    const bdPhoneRegex = /^(?:(?:\+?880)|0)1[3-9]\d{8}$/;
+
+    return bdPhoneRegex.test(cleanNumber);
 }
 
 export const parsePhoneNumber = (phoneNumber: string) => {

@@ -13,6 +13,7 @@ import { userUserLoaded, useUser } from "@/hooks/user";
 import { createAvatar } from '@dicebear/core';
 import { shapes } from '@dicebear/collection';
 import { toPng } from '@dicebear/converter';
+import { useRouter } from "next/navigation"
 
 const dummyUser = {
     name: "John Doe",
@@ -49,6 +50,7 @@ export default function Profile() {
     const [user, setUser] = useUser();
     const [userLoaded, _] = userUserLoaded();
     const [avatarUrl, setAvatarUrl] = useState<string>("/placeholder.svg");
+    const router = useRouter();
 
     useEffect(() => {
         async function generateAvatar() {
@@ -69,6 +71,10 @@ export default function Profile() {
     if (!userLoaded) return <div className="text-center">Loading...</div>;
     if (!user) return <div className="text-center">Not logged in</div>;
 
+    const handleVerify = async () => {
+        router.push("/verify");
+    }
+
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <Card>
@@ -78,10 +84,21 @@ export default function Profile() {
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-grow">
-                        <CardTitle>{user.name}</CardTitle>
-                        <CardDescription>{user.email}</CardDescription>
+                        <CardTitle className="text-lg font-semibold">{user.name}</CardTitle>
+                        <CardDescription className="text-sm text-muted-foreground">{user.email}</CardDescription>
+                        <Badge
+                            variant={user.isVerified ? "secondary" : "destructive"}
+                            className={`${user.isVerified ? "bg-green-500 text-white hover:bg-green-500" : ""}`}
+                        >
+                            {user.isVerified ? "Verified" : "Unverified"}
+                        </Badge>
                     </div>
-                    <Button>Edit Profile</Button>
+
+                    <div className="flex gap-2 items-center justify-end mt-4">
+                        <Button variant="outline">Edit Profile</Button>
+                        {!user.isVerified && <Button onClick={handleVerify} variant="default">Verify</Button>}
+                    </div>
+
                 </CardHeader>
                 <CardContent>
                     <p className="mb-4">{dummyUser.bio}</p>
