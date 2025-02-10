@@ -1,14 +1,5 @@
+import { IUserInfo } from '@/types';
 import { Model, model, models, Schema } from 'mongoose';
-
-export interface IUserInfo {
-    userId: string;
-    email: string;
-    avatar: string;
-    bio: string;
-    reportsCount: number;
-    upvotes: number;
-    downvotes: number;
-}
 
 const UserInfoSchema = new Schema<IUserInfo>({
     userId: { type: String, unique: true, required: true },

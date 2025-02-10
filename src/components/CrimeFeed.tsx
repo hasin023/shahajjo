@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { CrimeCard } from "./CrimeCard"
-import type { CrimePost } from "@/types/crime"
+import type { CrimePost } from "@/types"
 
 const dummyPosts: CrimePost[] = [
     {

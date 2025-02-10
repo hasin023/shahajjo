@@ -19,7 +19,7 @@ import {
     Clock,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import type { CrimePost, CrimeStatus } from "@/types/crime"
+import type { CrimePost, CrimeStatus } from "@/types"
 
 const statusIcons: Record<CrimeStatus, React.ElementType> = {
     verified: Shield,

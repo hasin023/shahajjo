@@ -1,15 +1,6 @@
+import { IUser } from '@/types';
 import { Model, model, models, Schema } from 'mongoose';
 
-export interface IUser {
-    name: string,
-    email: string,
-    phoneNumber?: string,
-    password: string,
-    isVerified:boolean,
-    otp: string;
-    otpExpiresAt: Date;
-    role: string,
-}
 
 const UserSchema = new Schema<IUser>({
     name: { type: String, required: true },

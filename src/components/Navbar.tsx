@@ -3,13 +3,14 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { AlertCircle, BarChart2, FileText, Home, Map, User, LogOutIcon } from "lucide-react"
 import { NotificationDropdown } from "./NotificationDropdown"
 import { userUserLoaded, useUser } from "@/hooks/user"
 
 const Navbar = () => {
     const pathname = usePathname()
+    const router = useRouter()
     const [user, setUser] = useUser();
     const [userLoaded, _] = userUserLoaded();
 
@@ -29,6 +30,8 @@ const Navbar = () => {
                 if (!data.error) setUser(null);
             })
             .catch((error) => console.error(error));
+
+        router.push("/");
     }
 
     return (

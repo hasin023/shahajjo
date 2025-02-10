@@ -1,5 +1,5 @@
 
-export function sendOTP(otp: string, phoneNumber:string) {
+export function sendOTP(otp: string, phoneNumber: string) {
     const API_KEY = process.env.SMS_API_KEY;
     const SMS_SENDERID = process.env.SMS_SENDERID;
     const url = "http://bulksmsbd.net/api/smsapi?";
@@ -8,12 +8,12 @@ export function sendOTP(otp: string, phoneNumber:string) {
         type: 'text',
         number: phoneNumber,
         senderid: SMS_SENDERID as string,
-         message: `Your Shahajjo verification code is ${otp}. Please do not share your OTP or PIN with others.`,
+        message: `Your Shahajjo verification code is ${otp}. Please do not share your OTP or PIN with others.`,
     });
     return fetch(url + urlParam.toString());
 }
 
-export function isPhoneNo(phoneNumber:string) {
+export function isPhoneNo(phoneNumber: string) {
     const numStr = phoneNumber.toString();
     // Regular expression to check if the number is 13 digits long and starts with '01'
     const phoneRegex = /^88\d{11}$/;
