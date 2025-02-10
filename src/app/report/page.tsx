@@ -39,7 +39,7 @@ export default function ReportCrime() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-7xl mx-auto space-y-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Report a Crime</CardTitle>

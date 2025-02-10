@@ -76,7 +76,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
                     <Avatar className="w-20 h-20">

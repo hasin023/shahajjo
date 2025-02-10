@@ -1,67 +1,56 @@
 "use client"
 
-import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
+import { motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import {
-    ArrowBigUp,
-    ArrowBigDown,
-    MessageSquare,
-    Share2,
-    Award,
-    MapPin,
-    AlertTriangle,
-    Shield,
-    Clock,
-} from "lucide-react"
+import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import type { CrimePost, CrimeStatus } from "@/types"
+import { ICrimeReport } from "@/types"
 
-const statusIcons: Record<CrimeStatus, React.ElementType> = {
+const statusIcons = {
     verified: Shield,
     investigating: AlertTriangle,
     resolved: Clock,
+    "not verified": AlertTriangle,
 }
 
-const statusColors: Record<CrimeStatus, string> = {
+const statusColors = {
     verified: "text-success",
     investigating: "text-yellow-500",
     resolved: "text-muted-foreground",
+    "not verified": "text-destructive",
 }
 
 interface CrimeCardProps {
-    post: CrimePost
-    onVote: (postId: string, direction: "up" | "down") => void
-    votedPosts: Record<string, "up" | "down" | null>
+    report: ICrimeReport
+    onVote: (reportId: string, direction: "up" | "down") => void
+    userVote: "up" | "down" | null
 }
 
-export function CrimeCard({ post, onVote, votedPosts }: CrimeCardProps) {
-    const [isExpanded, setIsExpanded] = useState(false)
+export function CrimeCard({ report, onVote, userVote }: CrimeCardProps) {
+    const StatusIcon = statusIcons[report.status]
 
     return (
-        <Card className="crime-card">
-            <div className="flex gap-4">
+        <Card className="crime-card hover:border-primary transition-colors duration-200">
+            <div className="flex">
                 {/* Vote Column */}
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center p-2 bg-muted rounded-l-lg">
                     <motion.button
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => onVote(post.id, "up")}
-                        className={`p-1 rounded-full transition-colors ${votedPosts[post.id] === "up" ? "text-primary" : "text-muted-foreground"
+                        onClick={() => onVote(report.id, "up")}
+                        className={`p-1 rounded-full transition-colors ${userVote === "up" ? "text-primary" : "text-muted-foreground"
                             }`}
                     >
                         <ArrowBigUp className="h-6 w-6" />
                     </motion.button>
-                    <span className="font-bold">
-                        {post.votes + (votedPosts[post.id] === "up" ? 1 : votedPosts[post.id] === "down" ? -1 : 0)}
-                    </span>
+                    <span className="font-bold text-sm py-1">{report.upvotes - report.downvotes}</span>
                     <motion.button
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => onVote(post.id, "down")}
-                        className={`p-1 rounded-full transition-colors ${votedPosts[post.id] === "down" ? "text-destructive" : "text-muted-foreground"
+                        onClick={() => onVote(report.id, "down")}
+                        className={`p-1 rounded-full transition-colors ${userVote === "down" ? "text-destructive" : "text-muted-foreground"
                             }`}
                     >
                         <ArrowBigDown className="h-6 w-6" />
@@ -69,99 +58,65 @@ export function CrimeCard({ post, onVote, votedPosts }: CrimeCardProps) {
                 </div>
 
                 {/* Content Column */}
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 p-4">
                     {/* Header */}
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
-                                <AvatarImage src={post.author.avatar} />
-                                <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+                            <Avatar className="h-6 w-6">
+                                <AvatarImage src={`https://avatar.vercel.sh/${report.reportedBy}`} />
+                                <AvatarFallback>{report.reportedBy[0]}</AvatarFallback>
                             </Avatar>
-                            <div>
-                                <div className="text-sm font-medium">
-                                    {post.author.name}
-                                    {post.author.isVerified && (
-                                        <Badge variant="secondary" className="ml-2">
-                                            Verified
-                                        </Badge>
-                                    )}
-                                </div>
-                                <p className="text-xs text-muted-foreground">{formatDistanceToNow(post.timestamp)} ago</p>
-                            </div>
+                            <span className="text-sm text-muted-foreground">
+                                Posted by {report.reportedBy} {formatDistanceToNow(new Date(report.createdAt))} ago
+                            </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {post.location}
-                            </Badge>
-                            {post.status && (
-                                <Badge variant="secondary" className={`gap-1 ${statusColors[post.status]}`}>
-                                    {React.createElement(statusIcons[post.status], { className: "h-3 w-3" })}
-                                    {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
-                                </Badge>
-                            )}
-                        </div>
+                        <Badge variant="outline" className="gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {report.location_name}
+                        </Badge>
                     </div>
 
                     {/* Title and Description */}
-                    <div>
-                        <h3 className="text-lg font-semibold">{post.title}</h3>
-                        <p className="mt-2 text-muted-foreground">{post.description}</p>
-                    </div>
+                    <Link href={`/${report.id}`} className="block group">
+                        <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-200">
+                            {report.title}
+                        </h3>
+                        <p className="mt-2 text-muted-foreground line-clamp-3">{report.description}</p>
+                    </Link>
 
                     {/* Images */}
-                    {post.images && post.images.length > 0 && (
-                        <div className="grid grid-cols-2 gap-4">
-                            {post.images.map((image, index) => (
+                    {report.images && report.images.length > 0 && (
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                            {report.images.slice(0, 2).map((image, index) => (
                                 <img
                                     key={index}
                                     src={image || "/placeholder.svg"}
                                     alt={`Evidence ${index + 1}`}
-                                    className="rounded-lg object-cover w-full h-48"
+                                    className="rounded-md object-cover w-full h-32"
                                 />
                             ))}
                         </div>
                     )}
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between pt-4">
+                    <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="sm" className="gap-2" onClick={() => setIsExpanded(!isExpanded)}>
-                                <MessageSquare className="h-4 w-4" />
-                                {post.comments} Comments
-                            </Button>
+                            <Link href={`/${report.id}`}>
+                                <Button variant="ghost" size="sm" className="gap-2">
+                                    <MessageSquare className="h-4 w-4" />
+                                    {report.comments.length} Comments
+                                </Button>
+                            </Link>
                             <Button variant="ghost" size="sm" className="gap-2">
                                 <Share2 className="h-4 w-4" />
                                 Share
                             </Button>
                         </div>
-                        <div className="flex items-center gap-2">
-                            {post.awards.map((award, index) => (
-                                <Badge key={index} variant="secondary" className="gap-1">
-                                    <Award className="h-3 w-3" />
-                                    {award}
-                                </Badge>
-                            ))}
-                        </div>
+                        <Badge variant="secondary" className={`gap-1 ${statusColors[report.status]}`}>
+                            <StatusIcon className="h-3 w-3" />
+                            {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                        </Badge>
                     </div>
-
-                    {/* Expanded Comments Section */}
-                    <AnimatePresence>
-                        {isExpanded && (
-                            <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <Separator className="my-4" />
-                                <div className="space-y-4">
-                                    {/* Add comments here */}
-                                    <p className="text-center text-muted-foreground">No comments yet</p>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </div>
             </div>
         </Card>

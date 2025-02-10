@@ -21,8 +21,7 @@ export default function CrimeMap() {
     }
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold">Crime Heatmap</h1>
+        <div className="max-w-7xl mx-auto space-y-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Filter Crimes</CardTitle>

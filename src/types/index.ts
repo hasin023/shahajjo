@@ -3,7 +3,7 @@ export interface IUser {
     email: string,
     phoneNumber?: string,
     password: string,
-    isVerified:boolean,
+    isVerified: boolean,
     otp: string;
     otpExpiresAt: Date;
     role: string,
@@ -20,6 +20,7 @@ export interface IUserInfo {
 }
 
 export interface ICrimeReport {
+    id: string;
     title: string;
     description: string;
     location_name: string,
@@ -41,7 +42,7 @@ export interface ICrimeReport {
 export interface IComment {
     author: string;
     content: string;
-    replyOf: string;   
+    replyOf: string;
     createdAt: Date;
     updatedAt: Date;
 }
