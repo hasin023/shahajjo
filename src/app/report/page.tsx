@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,21 +8,45 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+import { MapProvider } from "@/components/MapProvider"
+import AutoCompleteInput from "@/components/AutoCompleteInput"
+import { Address } from "@/types"
+import toast from "react-hot-toast"
 
 export default function ReportCrime() {
     const [isLoading, setIsLoading] = useState(false)
     const [image, setImage] = useState<File | null>(null)
     const [description, setDescription] = useState("")
-    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
+    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+    const [address, setAddress] = useState<Address | null>(null)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            setIsLoading(true)
+            const formData = new FormData(e.target as HTMLFormElement);
+            formData.append("description", description);
+            formData.append("location_name", address?.name || "");
+            formData.append("lat", address?.location.lat.toString() || "");
+            formData.append("lng", address?.location.lng.toString() || "");
+            fetch("/api/user/report", {
+                method: "POST",
+                body: formData,
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.error) toast.error(data.error)
+                    else {
+                        toast.success("Report submitted successfully!");
+                        (e.target as HTMLFormElement).reset();
+                    }
+                });
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to submit report. Please try again.")
+        } finally {
             setIsLoading(false)
-            alert("Crime reported successfully!")
-        }, 2000)
+        }
     }
 
     const generateDescription = async () => {
@@ -49,7 +73,7 @@ export default function ReportCrime() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <Label htmlFor="title">Title</Label>
-                            <Input id="title" placeholder="Enter crime title" required />
+                            <Input  name="title" id="title" placeholder="Enter crime title" required />
                         </div>
                         <div>
                             <Label htmlFor="description">Description</Label>
@@ -62,41 +86,19 @@ export default function ReportCrime() {
                             />
                         </div>
                         <div className="flex gap-4">
-                            <div className="flex-1">
-                                <Label htmlFor="division">Division</Label>
-                                <Select>
-                                    <SelectTrigger id="division">
-                                        <SelectValue placeholder="Select division" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="dhaka">Dhaka</SelectItem>
-                                        <SelectItem value="chittagong">Chittagong</SelectItem>
-                                        <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="flex-1">
-                                <Label htmlFor="district">District</Label>
-                                <Select>
-                                    <SelectTrigger id="district">
-                                        <SelectValue placeholder="Select district" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="dhaka-city">Dhaka City</SelectItem>
-                                        <SelectItem value="gazipur">Gazipur</SelectItem>
-                                        <SelectItem value="narayanganj">Narayanganj</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            <MapProvider>
+                                <AutoCompleteInput setAddress={setAddress} address={address} />
+                            </MapProvider>
                         </div>
                         <div>
                             <Label htmlFor="crimeTime">Crime Time</Label>
-                            <Input id="crimeTime" type="datetime-local" required />
+                            <Input id="crimeTime" name="crimeTime"  type="datetime-local" required />
                         </div>
                         <div>
                             <Label htmlFor="image">Upload Image</Label>
                             <Input
                                 id="image"
+                                name="images"
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) => setImage(e.target.files?.[0] || null)}
@@ -119,12 +121,14 @@ export default function ReportCrime() {
                             <Label htmlFor="video">Upload Video (Optional)</Label>
                             <Input id="video" type="file" accept="video/*" />
                         </div>
+                        <div className="pt-6">
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? "Submitting..." : "Submit Report"}
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? "Submitting..." : "Submit Report"}
-                    </Button>
                 </CardFooter>
             </Card>
         </div>

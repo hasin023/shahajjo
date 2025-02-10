@@ -14,12 +14,15 @@ const CrimeReportSchema = new Schema<ICrimeReport>({
     reportedBy: { type: String, ref: "user", required: true },
     upvotes: { type: Number, default: 0 }, // Number of upvotes
     downvotes: { type: Number, default: 0 }, // Number of downvotes
-    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "comment" }],
     verified: { type: Boolean, default: false }, // Admin verification status
+    crimeTime: { type: Date, required: true, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     status: { type: String, enum: ['verified', 'investigating', 'resolved', 'not verified'], default: 'not verified' },
     createdAt: { type: Date, default: Date.now }
 });
+CrimeReportSchema.index({ location: '2dsphere' });
+CrimeReportSchema.index({ title: 'text', description: 'text', location_name: 'text' });
 
 const CrimeReport = models?.crimeReport as Model<ICrimeReport> || model('crimeReport', CrimeReportSchema);
 

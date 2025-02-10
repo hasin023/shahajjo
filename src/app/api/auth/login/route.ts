@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     response.cookies.set("token", token, {
       httpOnly: true,
-      maxAge: 60 * 60 * 1.2,
+      maxAge: 60 * 60 * 24 * 7,
       sameSite: "none",
       secure: true,
     });
