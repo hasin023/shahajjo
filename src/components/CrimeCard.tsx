@@ -18,10 +18,10 @@ const statusIcons = {
 }
 
 const statusColors = {
-    verified: "text-success",
+    verified: "text-green-500",
     investigating: "text-yellow-500",
     resolved: "text-muted-foreground",
-    "not verified": "text-destructive",
+    "not verified": "text-red-500",
 }
 
 interface CrimeCardProps {

@@ -6,6 +6,7 @@ import { DetailedCrimeCard } from "@/components/DetailedCrimeCard"
 import { CommentsSection } from "@/components/CommentsSection"
 import { crimeReports } from "@/libs/dummy-data"
 import type { ICrimeReport } from "@/types"
+import { Sidebar } from "@/components/Sidebar"
 
 // This would typically come from an API call
 const fetchReportDetails = async (id: string): Promise<ICrimeReport> => {
@@ -69,10 +70,14 @@ export default function ReportDetailsPage() {
     if (!report) return <div>Loading...</div>
 
     return (
-        <div className="max-w-7xl mx-auto p-4 space-y-6">
-            <DetailedCrimeCard report={report} onVote={handleVote} userVote={userVote} />
-            <CommentsSection comments={comments} onCommentSubmit={handleCommentSubmit} />
+        <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1 container mx-auto p-4 space-y-6">
+                <DetailedCrimeCard report={report} onVote={handleVote} userVote={userVote} />
+                <CommentsSection comments={comments} onCommentSubmit={handleCommentSubmit} />
+            </main>
         </div>
+
     )
 }
 
