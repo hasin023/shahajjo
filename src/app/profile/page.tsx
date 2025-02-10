@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
+import { userUserLoaded, useUser } from "@/hooks/user";
+
 const dummyUser = {
     name: "John Doe",
     email: "john@example.com",
@@ -40,6 +42,11 @@ const dummyActivityData = [
 
 export default function Profile() {
     const [activeTab, setActiveTab] = useState("overview")
+    const [user, setUser] = useUser();
+    const [userLoaded, _] = userUserLoaded();
+
+    if (!userLoaded) return <div className="text-center">Loading...</div>;
+    if (!user) return <div className="text-center">Not logged in</div>;
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
@@ -47,11 +54,11 @@ export default function Profile() {
                 <CardHeader className="flex flex-row items-center gap-4">
                     <Avatar className="w-20 h-20">
                         <AvatarImage src={dummyUser.avatar} alt={dummyUser.name} />
-                        <AvatarFallback>{dummyUser.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-grow">
-                        <CardTitle>{dummyUser.name}</CardTitle>
-                        <CardDescription>{dummyUser.email}</CardDescription>
+                        <CardTitle>{user.name}</CardTitle>
+                        <CardDescription>{user.email}</CardDescription>
                     </div>
                     <Button>Edit Profile</Button>
                 </CardHeader>
