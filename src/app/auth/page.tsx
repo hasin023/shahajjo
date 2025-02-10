@@ -38,7 +38,23 @@ export default function Auth() {
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true)
+        try {
+            setIsLoading(true)
+            const formData = new FormData(e.target as HTMLFormElement);
+            const data = Object.fromEntries(formData.entries());
+            const res = await fetch("/api/auth/signup", {
+                method: "POST",
+                body: JSON.stringify(data),
+            })
+            const result = await res.json();
+            toast.success("Account created");
+            router.push("/auth");
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to signup.", (error as any).message);
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
