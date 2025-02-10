@@ -7,6 +7,7 @@ import { NextResponse, NextRequest } from 'next/server';
 export async function PATCH(request: NextRequest) {
     try {
         const { phoneNumber } = await request.json();
+
         if (!phoneNumber || !isPhoneNo(phoneNumber)) return NextResponse.json({ error: 'Missing or invalid phone number' }, { status: 400 });
         const loggedInUser = await getAuth(request);
         if (!loggedInUser)

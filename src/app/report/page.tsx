@@ -12,6 +12,7 @@ import { MapProvider } from "@/components/MapProvider"
 import AutoCompleteInput from "@/components/AutoCompleteInput"
 import { Address } from "@/types"
 import toast from "react-hot-toast"
+import { Sidebar } from "@/components/Sidebar"
 
 export default function ReportCrime() {
     const [isLoading, setIsLoading] = useState(false)
@@ -63,7 +64,10 @@ export default function ReportCrime() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1">
+                <div className="max-w-7xl mx-auto py-6 px-4 space-y-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Report a Crime</CardTitle>
@@ -73,7 +77,7 @@ export default function ReportCrime() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <Label htmlFor="title">Title</Label>
-                            <Input  name="title" id="title" placeholder="Enter crime title" required />
+                            <Input id="title" placeholder="Enter crime title" required />
                         </div>
                         <div>
                             <Label htmlFor="description">Description</Label>
@@ -86,19 +90,41 @@ export default function ReportCrime() {
                             />
                         </div>
                         <div className="flex gap-4">
-                            <MapProvider>
-                                <AutoCompleteInput setAddress={setAddress} address={address} />
-                            </MapProvider>
+                            <div className="flex-1">
+                                <Label htmlFor="division">Division</Label>
+                                <Select>
+                                    <SelectTrigger id="division">
+                                        <SelectValue placeholder="Select division" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="dhaka">Dhaka</SelectItem>
+                                        <SelectItem value="chittagong">Chittagong</SelectItem>
+                                        <SelectItem value="rajshahi">Rajshahi</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex-1">
+                                <Label htmlFor="district">District</Label>
+                                <Select>
+                                    <SelectTrigger id="district">
+                                        <SelectValue placeholder="Select district" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="dhaka-city">Dhaka City</SelectItem>
+                                        <SelectItem value="gazipur">Gazipur</SelectItem>
+                                        <SelectItem value="narayanganj">Narayanganj</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         <div>
                             <Label htmlFor="crimeTime">Crime Time</Label>
-                            <Input id="crimeTime" name="crimeTime"  type="datetime-local" required />
+                            <Input id="crimeTime" type="datetime-local" required />
                         </div>
                         <div>
                             <Label htmlFor="image">Upload Image</Label>
                             <Input
                                 id="image"
-                                name="images"
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) => setImage(e.target.files?.[0] || null)}
@@ -121,16 +147,16 @@ export default function ReportCrime() {
                             <Label htmlFor="video">Upload Video (Optional)</Label>
                             <Input id="video" type="file" accept="video/*" />
                         </div>
-                        <div className="pt-6">
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading ? "Submitting..." : "Submit Report"}
-                            </Button>
-                        </div>
                     </form>
                 </CardContent>
                 <CardFooter>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? "Submitting..." : "Submit Report"}
+                    </Button>
                 </CardFooter>
             </Card>
+        </div>
+            </main>
         </div>
     )
 }

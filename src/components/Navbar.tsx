@@ -17,7 +17,6 @@ const Navbar = () => {
     const navItems = [
         { href: "/", label: "Home", icon: Home },
         { href: "/report", label: "Report Crime", icon: AlertCircle },
-        { href: "/map", label: "Crime Map", icon: Map },
         { href: "/leaderboard", label: "Leaderboard", icon: BarChart2 },
         { href: "/profile", label: "Profile", icon: User, role: "user" },
         { href: "/admin", label: "Admin", icon: FileText, role: "admin" },

@@ -34,7 +34,7 @@ export default function RootLayout({
               <Navbar />
             </header>
             <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
-            <Toaster/>
+            <Toaster />
           </div>
         </ThemeProvider>
       </body>
