@@ -8,8 +8,6 @@ export async function GET(request: NextRequest) {
         let limit = Number.parseInt(searchParams.get("limit") || "10", 10)
         let page = Number.parseInt(searchParams.get("page") || "1", 10)
         const search = searchParams.get("search") || ""
-        const division = searchParams.get("division") || "All"
-        const crimeType = searchParams.get("crimeType") || "All"
         const sort = searchParams.get("sort") || "Most Recent"
 
         page = Math.max(1, page)
@@ -22,12 +20,6 @@ export async function GET(request: NextRequest) {
         const query: any = {}
         if (search) {
             query.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }]
-        }
-        if (division !== "All") {
-            query.location_name = { $regex: division, $options: "i" }
-        }
-        if (crimeType !== "All") {
-            query.status = crimeType.toLowerCase()
         }
 
         // Determine sort order
