@@ -12,8 +12,7 @@ import { Filter, SlidersHorizontal, LayoutList, LayoutGrid } from "lucide-react"
 import ReactPaginate from "react-paginate"
 import { ICrimeReport } from "@/types"
 
-const divisions = ["All", "Dhaka", "Chittagong", "Rajshahi", "Khulna", "Barisal", "Sylhet", "Rangpur", "Mymensingh"]
-const crimeTypes = ["All", "Theft", "Robbery", "Assault", "Burglary", "Vandalism", "Fraud", "Accident"]
+// const divisions = ["All", "Dhaka", "Chittagong", "Rajshahi", "Khulna", "Barisal", "Sylhet", "Rangpur", "Mymensingh"]
 const sortOptions = ["Most Recent", "Most Upvoted", "Highest Verification Score"]
 
 interface ApiResponse {
@@ -25,8 +24,7 @@ interface ApiResponse {
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedDivision, setSelectedDivision] = useState("All")
-  const [selectedCrimeType, setSelectedCrimeType] = useState("All")
+  // const [selectedDivision, setSelectedDivision] = useState("All")
   const [selectedSort, setSelectedSort] = useState("Most Recent")
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<"full" | "compact">("full")
@@ -37,12 +35,12 @@ export default function Home() {
 
   useEffect(() => {
     fetchCrimeReports()
-  }, [searchQuery, selectedDivision, selectedCrimeType, selectedSort, currentPage])
+  }, [searchQuery, selectedSort, currentPage])
 
   const fetchCrimeReports = async () => {
     try {
       const response = await fetch(
-        `/api/report?page=${currentPage + 1}&search=${searchQuery}&division=${selectedDivision}&crimeType=${selectedCrimeType}&sort=${selectedSort}`,
+        `/api/report?page=${currentPage + 1}&search=${searchQuery}&sort=${selectedSort}`,
       )
       const data: ApiResponse = await response.json()
       setCrimeReports(data.contents)
@@ -106,7 +104,7 @@ export default function Home() {
               <Card className="animate-in">
                 <CardContent className="p-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    <Select value={selectedDivision} onValueChange={setSelectedDivision}>
+                    {/* <Select value={selectedDivision} onValueChange={setSelectedDivision}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select Division" />
                       </SelectTrigger>
@@ -117,19 +115,7 @@ export default function Home() {
                           </SelectItem>
                         ))}
                       </SelectContent>
-                    </Select>
-                    <Select value={selectedCrimeType} onValueChange={setSelectedCrimeType}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Crime Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {crimeTypes.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    </Select> */}
                     <Select value={selectedSort} onValueChange={setSelectedSort}>
                       <SelectTrigger>
                         <SelectValue placeholder="Sort by" />

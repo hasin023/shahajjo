@@ -7,12 +7,13 @@ import { NextResponse, type NextRequest } from "next/server"
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         await dbConnect()
-        const report = await CrimeReport.findById(params.id)
+        const { id } = await params
+        const report = await CrimeReport.findById(id)
         if (!report) {
             return NextResponse.json({ error: "Report not found" }, { status: 404 })
         }
 
-        const comments = await Comment.find({ crimeReportId: params.id }).sort({ createdAt: -1 })
+        const comments = await Comment.find({ crimeReportId: id }).sort({ createdAt: -1 })
 
         let isAuthor = false;
         try {

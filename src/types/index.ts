@@ -39,6 +39,10 @@ export interface ICrimeReport {
     crimeTime: Date,
     updatedAt: Date,
     createdAt: Date
+    author?: {
+        name: string;
+        avatar: string;
+    }
 }
 
 export interface IComment {
@@ -61,6 +65,6 @@ export interface IVote {
 }
 
 export type Address = {
-    location: { lat: number, lng: number };
     name?: string;
+    location: { lat: number, lng: number };
 }

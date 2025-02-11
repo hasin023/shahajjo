@@ -81,22 +81,24 @@ export default function ReportDetailsPage() {
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this report?")) {
             try {
-                const response = await fetch(`/api/report/${crimeReportId}`, {
+                const response = await fetch(`/api/user/report`, {
                     method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ reportId: crimeReportId }),
                 })
-                if (!response.ok) throw new Error("Failed to delete report")
-                toast({
-                    title: "Success",
-                    description: "Report deleted successfully.",
-                })
+
+                if (!response.ok) {
+                    const data = await response.json()
+                    throw new Error(data.error || "Failed to delete report")
+                }
+
+                toast.success("Report deleted successfully.")
                 router.push("/")
             } catch (error) {
                 console.error("Failed to delete report:", error)
-                toast({
-                    title: "Error",
-                    description: "Failed to delete the report. Please try again.",
-                    variant: "destructive",
-                })
+                toast.error("Failed to delete the report.")
             }
         }
     }

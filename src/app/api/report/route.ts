@@ -1,5 +1,7 @@
 import { dbConnect } from "@/db/mongodb/connect"
 import CrimeReport from "@/db/mongodb/models/CrimeReport"
+import User from "@/db/mongodb/models/User"
+import UserInfo from "@/db/mongodb/models/UserInfo"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function GET(request: NextRequest) {
@@ -50,7 +52,38 @@ export async function GET(request: NextRequest) {
                 sortOrder = { createdAt: -1 }
         }
 
-        const contents = await CrimeReport.find(query).skip(skip).limit(limit).sort(sortOrder)
+        const reports = await CrimeReport.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort(sortOrder)
+            .lean()
+
+        const authorIds = [...new Set(reports.map(report => report.reportedBy))]
+
+        // Fetch authors' names
+        const authors = await User.find({ _id: { $in: authorIds } })
+            .select('_id name')
+            .lean()
+
+        // Fetch authors' avatars
+        const userInfos = await UserInfo.find({
+            userId: { $in: authorIds.map(id => id.toString()) }
+        })
+            .select('userId avatar')
+            .lean()
+
+        // Create maps for easy lookup
+        const authorMap = new Map(authors.map(author => [author._id.toString(), author.name]))
+        const avatarMap = new Map(userInfos.map(info => [info.userId, info.avatar]))
+
+        // Combine reports with author name and avatar
+        const contents = reports.map(report => ({
+            ...report,
+            author: {
+                name: authorMap.get(report.reportedBy.toString()) || 'Unknown',
+                avatar: avatarMap.get(report.reportedBy.toString()) || ''
+            }
+        }))
 
         const totalItems = await CrimeReport.countDocuments(query)
 
