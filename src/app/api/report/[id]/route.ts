@@ -6,9 +6,6 @@ import { NextResponse, type NextRequest } from "next/server"
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
-
-        const loggedInUser = await getAuth(request);
-
         await dbConnect()
         const report = await CrimeReport.findById(params.id)
         if (!report) {
@@ -16,7 +13,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         }
 
         const comments = await Comment.find({ crimeReportId: params.id }).sort({ createdAt: -1 })
-        const isAuthor = loggedInUser.id === report.reportedBy.toString()
+
+        let isAuthor = false;
+        try {
+            const loggedInUser = await getAuth(request);
+            if (loggedInUser && loggedInUser.id) {
+                isAuthor = loggedInUser.id === report.reportedBy.toString();
+            }
+        } catch (authError) {
+            console.error("Error checking user auth: ", authError)
+        }
 
         return NextResponse.json({
             report,
