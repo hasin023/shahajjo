@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader2, X } from "lucide-react"
+import { Loader2, Trash2, X } from "lucide-react"
 import { MapProvider } from "@/components/MapProvider"
 import AutoCompleteInput from "@/components/AutoCompleteInput"
 import type { Address } from "@/types"
@@ -27,9 +27,10 @@ export default function EditReport() {
     const [description, setDescription] = useState("")
     const [address, setAddress] = useState<Address | null>(null)
     const [crimeTime, setCrimeTime] = useState("")
-    const [image, setImage] = useState<File | null>(null)
-    const [imagePreview, setImagePreview] = useState<string | null>(null)
-    const [video, setVideo] = useState<File | null>(null)
+    const [existingImages, setExistingImages] = useState<string[]>([])
+    const [existingVideos, setExistingVideos] = useState<string[]>([])
+    const [newImage, setNewImage] = useState<File | null>(null)
+    const [newVideo, setNewVideo] = useState<File | null>(null)
     const [videoDescription, setVideoDescription] = useState("")
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -51,7 +52,8 @@ export default function EditReport() {
                         },
                     })
                     setCrimeTime(new Date(data.report.crimeTime).toISOString().slice(0, 16))
-                    setImagePreview(data.report.images[0] || null)
+                    setExistingImages(data.report.images || [])
+                    setExistingVideos(data.report.videos || [])
                     setVideoDescription(data.report.videoDescription || "")
                 } else {
                     toast.error("Failed to fetch report")
@@ -78,9 +80,11 @@ export default function EditReport() {
             formData.append("lng", address?.location.lng.toString() || "")
             formData.append("crimeTime", crimeTime)
             formData.append("videoDescription", videoDescription)
+            formData.append("existingImages", JSON.stringify(existingImages))
+            formData.append("existingVideos", JSON.stringify(existingVideos))
 
-            if (image) formData.append("images", image)
-            if (video) formData.append("videos", video)
+            if (newImage) formData.append("newImage", newImage)
+            if (newVideo) formData.append("newVideo", newVideo)
 
             const res = await fetch(`/api/user/report`, {
                 method: "PUT",
@@ -101,10 +105,10 @@ export default function EditReport() {
     }
 
     const generateDescription = async () => {
-        if (!image) return
+        if (!newImage) return
 
         setIsGeneratingDescription(true)
-        const response = await generateImageCaption(image)
+        const response = await generateImageCaption(newImage)
 
         if (response && response.generated_text) {
             setDescription(response.generated_text as string)
@@ -118,25 +122,34 @@ export default function EditReport() {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
-            setImage(file)
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string)
-            }
-            reader.readAsDataURL(file)
+            setNewImage(file)
         }
     }
 
     const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
-            setVideo(file)
+            setNewVideo(file)
         }
     }
 
-    const removeImage = () => {
-        setImage(null)
-        setImagePreview(null)
+    const removeExistingImage = (index: number) => {
+        setExistingImages(existingImages.filter((_, i) => i !== index))
+    }
+
+    const removeExistingVideo = (index: number) => {
+        setExistingVideos(existingVideos.filter((_, i) => i !== index))
+    }
+
+    const removeNewImage = () => {
+        setNewImage(null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""
+        }
+    }
+
+    const removeNewVideo = () => {
+        setNewVideo(null)
         if (fileInputRef.current) {
             fileInputRef.current.value = ""
         }
@@ -200,36 +213,60 @@ export default function EditReport() {
                                     </div>
                                     <div className="space-y-4">
                                         <div>
-                                            <Label htmlFor="image">Upload New Image (Optional)</Label>
+                                            <Label>Existing Images</Label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {existingImages.map((image, index) => (
+                                                    <div key={index} className="relative">
+                                                        <img
+                                                            src={image || "/placeholder.svg"}
+                                                            alt={`Evidence ${index + 1}`}
+                                                            className="w-full h-32 object-cover rounded"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="icon"
+                                                            className="absolute top-1 right-1"
+                                                            onClick={() => removeExistingImage(index)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <Label htmlFor="newImage">Upload New Image (Optional)</Label>
                                             <Input
                                                 className="bg-white bg-opacity-20"
-                                                id="image"
-                                                name="images"
+                                                id="newImage"
+                                                name="newImage"
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={handleImageChange}
                                                 ref={fileInputRef}
                                             />
                                         </div>
-                                        {imagePreview && (
+                                        {newImage && (
                                             <div className="relative">
                                                 <img
-                                                    src={imagePreview || "/placeholder.svg"}
-                                                    alt="Preview"
-                                                    className="mt-2 h-64 w-64 rounded-lg object-cover"
+                                                    src={URL.createObjectURL(newImage) || "/placeholder.svg"}
+                                                    alt="New image preview"
+                                                    className="mt-2 h-32 w-full object-cover rounded"
                                                 />
                                                 <Button
                                                     type="button"
                                                     variant="destructive"
                                                     size="icon"
-                                                    className="absolute top-2 right-2"
-                                                    onClick={removeImage}
+                                                    className="absolute top-1 right-1"
+                                                    onClick={removeNewImage}
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         )}
-                                        {image && (
+                                        {newImage && (
                                             <Button
                                                 type="button"
                                                 variant="secondary"
@@ -248,16 +285,42 @@ export default function EditReport() {
                                             </Button>
                                         )}
                                         <div>
-                                            <Label htmlFor="video">Upload New Video (Optional)</Label>
+                                            <Label>Existing Videos</Label>
+                                            <div className="space-y-2">
+                                                {existingVideos.map((video, index) => (
+                                                    <div key={index} className="flex items-center justify-between">
+                                                        <span className="truncate">{video}</span>
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="sm"
+                                                            onClick={() => removeExistingVideo(index)}
+                                                        >
+                                                            Remove
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="newVideo">Upload New Video (Optional)</Label>
                                             <Input
-                                                id="video"
+                                                id="newVideo"
                                                 className="bg-white bg-opacity-20"
                                                 type="file"
                                                 accept="video/*"
-                                                name="videos"
+                                                name="newVideo"
                                                 onChange={handleVideoChange}
                                             />
                                         </div>
+                                        {newVideo && (
+                                            <div className="flex items-center justify-between">
+                                                <span className="truncate">{newVideo.name}</span>
+                                                <Button type="button" variant="destructive" size="sm" onClick={removeNewVideo}>
+                                                    Remove
+                                                </Button>
+                                            </div>
+                                        )}
                                         <div>
                                             <Label htmlFor="videoDescription">Video Description</Label>
                                             <Textarea

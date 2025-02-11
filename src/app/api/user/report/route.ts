@@ -89,29 +89,31 @@ export async function PUT(request: NextRequest) {
         const crimeTime = formData.get("crimeTime") as string
         const lat = formData.get("lat")
         const lng = formData.get("lng")
-        const images = formData.getAll("images") as File[]
-        const videos = formData.getAll("videos") as File[]
+        const newImage = formData.get("newImage") as File | null
+        const newVideo = formData.get("newVideo") as File | null
         const videoDescription = formData.get("videoDescription") as string
+        const existingImages = JSON.parse(formData.get("existingImages") as string) as string[]
+        const existingVideos = JSON.parse(formData.get("existingVideos") as string) as string[]
 
         if (!reportId) return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
 
         await dbConnect();
-        const report = await CrimeReport.findById(reportId);
-        if (!report) return NextResponse.json({ error: 'Report not found' }, { status: 404 });
+        const report = await CrimeReport.findById(reportId)
+        if (!report) return NextResponse.json({ error: "Report not found" }, { status: 404 })
 
         if (report.reportedBy.toString() !== loggedInUser.id)
-            return NextResponse.json({ error: 'Unauthorized to edit this report' }, { status: 403 });
+            return NextResponse.json({ error: "Unauthorized to edit this report" }, { status: 403 })
 
-        let imageUrls: string[] = report.images || []
-        if (images.length !== 0 && images[0].size) {
-            const newImageUrls = await uploadAllImagesParallel(images)
-            imageUrls = [...imageUrls, ...newImageUrls]
+        let imageUrls = existingImages
+        if (newImage && newImage.size > 0) {
+            const newImageUrl = await uploadAllImagesParallel([newImage])
+            imageUrls = [...imageUrls, ...newImageUrl]
         }
 
-        let videoUrls: string[] = report.videos || []
-        if (videos.length !== 0 && videos[0].size) {
-            const newVideoUrls = await uploadAllImagesParallel(videos)
-            videoUrls = [...videoUrls, ...newVideoUrls]
+        let videoUrls = existingVideos
+        if (newVideo && newVideo.size > 0) {
+            const newVideoUrl = await uploadAllImagesParallel([newVideo])
+            videoUrls = [...videoUrls, ...newVideoUrl]
         }
 
         report.title = title || report.title
