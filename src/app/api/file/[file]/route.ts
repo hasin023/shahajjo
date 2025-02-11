@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
 
-export async function GET(req:NextRequest, { params }:{  params: { file: string } }) {
-  const { file } = params; // Get image filename from URL
+export async function GET(req: NextRequest, { params }: { params: { file: string } }) {
+  const { file } = await params;
   const filePath = path.join(process.cwd(), "server-ftp", "root", file);
 
   if (!fs.existsSync(filePath)) {

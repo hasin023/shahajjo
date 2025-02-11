@@ -76,20 +76,22 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
     try {
-        const loggedInUser = await getAuth(request);
-        if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const loggedInUser = await getAuth(request)
+        if (!loggedInUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        if (!loggedInUser.isVerified)
+            return NextResponse.json({ error: "You need to be verified to edit reports" }, { status: 403 })
 
-        const formData = await request.formData();
-        const reportId = formData.get('reportId') as string;
-        const title = formData.get('title') as string;
-        const description = formData.get('description') as string;
-        const location_name = formData.get('location_name') as string;
-        const crimeTime = formData.get('crimeTime') as string;
-        const lat = formData.get('lat');
-        const lng = formData.get('lng');
-        const images = formData.getAll('images') as File[];
-        const videos = formData.getAll('videos') as File[];
-        const videoDescription = formData.get('videoDescription') as string;
+        const formData = await request.formData()
+        const reportId = formData.get("reportId") as string
+        const title = formData.get("title") as string
+        const description = formData.get("description") as string
+        const location_name = formData.get("location_name") as string
+        const crimeTime = formData.get("crimeTime") as string
+        const lat = formData.get("lat")
+        const lng = formData.get("lng")
+        const images = formData.getAll("images") as File[]
+        const videos = formData.getAll("videos") as File[]
+        const videoDescription = formData.get("videoDescription") as string
 
         if (!reportId) return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
 
@@ -100,21 +102,27 @@ export async function PUT(request: NextRequest) {
         if (report.reportedBy.toString() !== loggedInUser.id)
             return NextResponse.json({ error: 'Unauthorized to edit this report' }, { status: 403 });
 
-        let imageUrls: string[] = report.images || [];
-        if (images.length !== 0 && images[0].size) imageUrls = await uploadAllImagesParallel(images);
+        let imageUrls: string[] = report.images || []
+        if (images.length !== 0 && images[0].size) {
+            const newImageUrls = await uploadAllImagesParallel(images)
+            imageUrls = [...imageUrls, ...newImageUrls]
+        }
 
-        let videoUrls: string[] = report.videos || [];
-        if (videos.length !== 0 && videos[0].size) videoUrls = await uploadAllImagesParallel(videos);
+        let videoUrls: string[] = report.videos || []
+        if (videos.length !== 0 && videos[0].size) {
+            const newVideoUrls = await uploadAllImagesParallel(videos)
+            videoUrls = [...videoUrls, ...newVideoUrls]
+        }
 
-        report.title = title || report.title;
-        report.description = description || report.description;
-        report.location_name = location_name || report.location_name;
-        report.crimeTime = crimeTime ? new Date(crimeTime) : report.crimeTime;
-        report.location = lat && lng ? { type: 'Point', coordinates: [Number(lng), Number(lat)] } : report.location;
-        report.images = imageUrls;
-        report.videos = videoUrls;
-        report.updatedAt = new Date();
-        report.videoDescription = videoDescription || report.videoDescription;
+        report.title = title || report.title
+        report.description = description || report.description
+        report.location_name = location_name || report.location_name
+        report.crimeTime = crimeTime ? new Date(crimeTime) : report.crimeTime
+        report.location = lat && lng ? { type: "Point", coordinates: [Number(lng), Number(lat)] } : report.location
+        report.images = imageUrls
+        report.videos = videoUrls
+        report.updatedAt = new Date()
+        report.videoDescription = videoDescription || report.videoDescription
 
         await report.save();
         return NextResponse.json({ message: 'Report updated successfully' });
@@ -149,8 +157,11 @@ export async function DELETE(request: NextRequest) {
     try {
         const { reportId } = await request.json();
         if (!reportId) return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
+
         const loggedInUser = await getAuth(request);
         if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!loggedInUser.isVerified) return NextResponse.json({ error: 'You need to be verified to delete post' }, { status: 403 });
+
         await dbConnect();
         await CrimeReport.findByIdAndDelete(reportId);
         await Comment.deleteMany({ reportId });

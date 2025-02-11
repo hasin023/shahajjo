@@ -16,7 +16,6 @@ import {
     MoreVertical,
     CircleCheckBig,
     Image,
-    Video,
     ZoomInIcon,
     ZoomOutIcon,
     Edit,
@@ -86,16 +85,16 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                         {isAuthor && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm">
+                                    <Button variant="ghost" size="icon">
                                         <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
+                                    <DropdownMenuItem onClick={onEdit} className="cursor-pointer flex items-center">
                                         <Edit className="w-4 h-4 mr-2" />
                                         Edit
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={onDelete} className="cursor-pointer text-red-500">
+                                    <DropdownMenuItem onClick={onDelete} className="cursor-pointer text-red-500 flex items-center">
                                         <Trash className="w-4 h-4 mr-2" />
                                         Delete
                                     </DropdownMenuItem>
