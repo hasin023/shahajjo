@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         const lng = formData.get('lng');
         const images = formData.getAll('images') as File[];
         const videos = formData.getAll('videos') as File[];
+        const videoDescription = formData.get('videoDescription') as string;
 
         if (!title || !description || !location_name || !location_name)
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -55,6 +56,7 @@ export async function POST(request: NextRequest) {
             title,
             description,
             location_name,
+            videoDescription,
             crimeTime: new Date(crimeTime),
             location: {
                 type: 'Point',
@@ -87,6 +89,7 @@ export async function PUT(request: NextRequest) {
         const lng = formData.get('lng');
         const images = formData.getAll('images') as File[];
         const videos = formData.getAll('videos') as File[];
+        const videoDescription = formData.get('videoDescription') as string;
 
         if (!reportId) return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
 
@@ -111,6 +114,7 @@ export async function PUT(request: NextRequest) {
         report.images = imageUrls;
         report.videos = videoUrls;
         report.updatedAt = new Date();
+        report.videoDescription = videoDescription || report.videoDescription;
 
         await report.save();
         return NextResponse.json({ message: 'Report updated successfully' });

@@ -15,6 +15,11 @@ const sidebarLinks = [
         href: "/",
     },
     {
+        title: "Report Crime",
+        icon: AlertCircle,
+        href: "/report",
+    },
+    {
         title: "Crime Map",
         icon: Map,
         href: "/map",
@@ -24,11 +29,6 @@ const sidebarLinks = [
     //     icon: BarChart2,
     //     href: "/stats",
     // },
-    {
-        title: "Report Crime",
-        icon: AlertCircle,
-        href: "/report",
-    },
     // {
     //     title: "Settings",
     //     icon: Settings,

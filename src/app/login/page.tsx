@@ -44,13 +44,13 @@ const Login = () => {
 
   const validateForm = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
@@ -133,7 +133,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row">
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
@@ -290,7 +290,7 @@ const Login = () => {
 
               <div className="flex justify-between items-center">
                 <Button variant="link" asChild className="h-auto p-0">
-                  <Link href="/forgot-password" className="text-primary">
+                  <Link href="/reset-password" className="text-primary">
                     Forgot Password?
                   </Link>
                 </Button>

@@ -139,9 +139,12 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
 
                 {videos.length > 0 && (
                     <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">
+                        <h3 className="text-lg font-semibold mt-4">
                             Video clips ({videos.length})
                         </h3>
+                        <p className="text-muted-foreground">
+                            {report.videoDescription}
+                        </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {videos.map((video, index) => (
                                 <div key={index} className="aspect-video rounded-lg overflow-hidden border border-gray-200">

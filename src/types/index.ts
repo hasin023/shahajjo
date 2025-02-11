@@ -28,6 +28,7 @@ export interface ICrimeReport {
     },
     images: string[],
     videos: string[],
+    videoDescription?: string,
     reportedBy: string,
     upvotes: number,
     downvotes: number

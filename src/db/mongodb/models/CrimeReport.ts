@@ -1,7 +1,6 @@
 import { ICrimeReport } from '@/types';
 import { Model, model, models, Schema } from 'mongoose';
 
-
 const CrimeReportSchema = new Schema<ICrimeReport>({
   title: { type: String, required: true },
   description: { type: String, required: true },
@@ -12,6 +11,7 @@ const CrimeReportSchema = new Schema<ICrimeReport>({
   },
   images: [{ type: String }], // Image URLs
   videos: [{ type: String }], // Video URLs
+  videoDescription: { type: String }, // video description
   reportedBy: { type: String, ref: "user", required: true },
   upvotes: { type: Number, default: 0 }, // Number of upvotes
   downvotes: { type: Number, default: 0 }, // Number of downvotes

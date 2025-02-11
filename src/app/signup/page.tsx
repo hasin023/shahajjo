@@ -110,7 +110,7 @@ function SignUp() {
     const passwordRequirements = getPasswordRequirements(formData.password)
 
     return (
-        <div className="flex flex-col lg:flex-row min-h-screen">
+        <div className="flex flex-col md:flex-row">
             {/* Form Section */}
             <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-4 sm:p-6 lg:p-12">
                 <Card className="w-full max-w-md mx-auto">
