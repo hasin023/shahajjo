@@ -1,10 +1,33 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MapPin, AlertTriangle, Shield, Clock, ArrowBigUp, ArrowBigDown, Calendar, MoreVertical, CircleCheckBig, Edit, Trash } from "lucide-react"
+import {
+    MapPin,
+    AlertTriangle,
+    Shield,
+    Clock,
+    ArrowBigUp,
+    ArrowBigDown,
+    Calendar,
+    MoreVertical,
+    CircleCheckBig,
+    Image,
+    Video,
+    ZoomInIcon,
+    ZoomOutIcon,
+    Edit,
+    Trash,
+} from "lucide-react"
 import { formatDistanceToNow, format } from "date-fns"
 import type { ICrimeReport } from "@/types"
+import Lightbox from "yet-another-react-lightbox"
+import "yet-another-react-lightbox/styles.css"
+import Zoom from "yet-another-react-lightbox/plugins/zoom"
+import ReactPlayer from "react-player"
 
 const statusIcons = {
     verified: Shield,
@@ -31,6 +54,16 @@ interface DetailedCrimeCardProps {
 
 export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, onDelete }: DetailedCrimeCardProps) {
     const StatusIcon = statusIcons[report.status as keyof typeof statusIcons]
+    const [lightboxOpen, setLightboxOpen] = useState(false)
+    const [lightboxIndex, setLightboxIndex] = useState(0)
+
+    const images = report.images || []
+    const videos = report.videos || []
+
+    const openLightbox = (index: number) => {
+        setLightboxIndex(index)
+        setLightboxOpen(true)
+    }
 
     return (
         <Card className="w-full">
@@ -58,11 +91,11 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={onEdit}>
+                                    <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
                                         <Edit className="w-4 h-4 mr-2" />
                                         Edit
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={onDelete}>
+                                    <DropdownMenuItem onClick={onDelete} className="cursor-pointer text-red-500">
                                         <Trash className="w-4 h-4 mr-2" />
                                         Delete
                                     </DropdownMenuItem>
@@ -82,18 +115,48 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                     <Calendar className="w-4 h-4" />
                     <span>Reported on {format(new Date(report.createdAt), "MMMM d, yyyy 'at' h:mm a")}</span>
                 </div>
-                {report.images && report.images.length > 0 && (
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        {report.images.map((image, index) => (
-                            <img
+
+                {images.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {images.map((image, index) => (
+                            <div
                                 key={index}
-                                src={image || "/placeholder.svg"}
-                                alt={`Evidence ${index + 1}`}
-                                className="rounded-md object-cover w-full h-48"
-                            />
+                                className="relative aspect-square cursor-pointer overflow-hidden rounded-md"
+                                onClick={() => openLightbox(index)}
+                            >
+                                <img
+                                    src={image || "/placeholder.svg"}
+                                    alt={`Evidence ${index + 1}`}
+                                    className="object-cover w-full h-full"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                    <Image className="w-8 h-8 text-white" />
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}
+
+                {videos.length > 0 && (
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                            Video clips ({videos.length})
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {videos.map((video, index) => (
+                                <div key={index} className="aspect-video rounded-lg overflow-hidden border border-gray-200">
+                                    <ReactPlayer
+                                        url={video}
+                                        width="100%"
+                                        height="100%"
+                                        controls
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex items-center space-x-4 mt-4">
                     <button
                         onClick={() => onVote(report._id, "upvote")}
@@ -111,6 +174,25 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                     </button>
                 </div>
             </CardContent>
+
+            <Lightbox
+                open={lightboxOpen}
+                close={() => setLightboxOpen(false)}
+                index={lightboxIndex}
+                slides={images.map((image) => ({ src: image }))}
+                plugins={[Zoom]}
+                zoom={{
+                    maxZoomPixelRatio: 5,
+                    zoomInMultiplier: 2,
+                }}
+                carousel={{
+                    preload: 3,
+                }}
+                render={{
+                    iconZoomIn: () => <ZoomInIcon />,
+                    iconZoomOut: () => <ZoomOutIcon />,
+                }}
+            />
         </Card>
     )
 }
