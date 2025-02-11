@@ -6,6 +6,7 @@ const UserInfoSchema = new Schema<IUserInfo>({
     email: { type: String, unique: true },
     avatar: { type: String, default: '' },
     bio: { type: String, default: '' },
+    address: { type: String, default: '' },
 });
 
 const UserInfo = models?.userInfo as Model<IUserInfo> || model('userInfo', UserInfoSchema);

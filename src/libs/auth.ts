@@ -55,6 +55,7 @@ export const getProfile = async (token: string) => {
       email: payload.email as string,
       role: payload.role as string,
       isVerified: payload.isVerified as boolean,
+      phoneNumber: payload.phoneNumber as string,
     };
   } catch (error) {
     console.error("Token verification error:", error);

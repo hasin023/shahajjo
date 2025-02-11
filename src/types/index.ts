@@ -12,8 +12,9 @@ export interface IUser {
 export interface IUserInfo {
     userId: string;
     email: string;
-    avatar: string;
-    bio: string;
+    avatar?: string;
+    bio?: string;
+    address?: string;
 }
 
 export interface ICrimeReport {
@@ -56,6 +57,6 @@ export interface IVote {
 }
 
 export type Address = {
-    location: {lat: number, lng: number};
+    location: { lat: number, lng: number };
     name?: string;
-  }
+}
