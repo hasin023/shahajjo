@@ -34,6 +34,7 @@ export default function ReportCrime() {
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
   const [address, setAddress] = useState<Address | null>(null);
 
+  console.log("Checking")
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -43,6 +44,7 @@ export default function ReportCrime() {
       formData.append("location_name", address?.name || "");
       formData.append("lat", address?.location.lat.toString() || "");
       formData.append("lng", address?.location.lng.toString() || "");
+      console.log(formData.getAll("videos"));
       const res = await fetch("/api/user/report", {
         method: "POST",
         body: formData,
@@ -51,7 +53,8 @@ export default function ReportCrime() {
         if (data.error) toast.error(data.error);
         else {
         toast.success("Report submitted successfully!");
-        (e.target as HTMLFormElement).reset();
+        // (e.target as HTMLFormElement).reset();
+        // setDescription("");
         }
     } catch (error) {
       console.error(error);
@@ -156,7 +159,7 @@ export default function ReportCrime() {
                 )}
                 <div>
                   <Label htmlFor="video">Upload Video (Optional)</Label>
-                  <Input id="video" className="bg-white bg-opacity-20" type="file" accept="video/*" name="video" />
+                  <Input id="video" className="bg-white bg-opacity-20" type="file" accept="video/*" name="videos" />
                 </div>
                 <div className="pt-6">
                   <Button type="submit" className="w-full" disabled={isLoading}>

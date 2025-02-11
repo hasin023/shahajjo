@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
             videos: videoUrls,
         });
         await report.save();
-        return NextResponse.json({ error: false, message: 'Report created successfully' });
+        return NextResponse.json({ message: 'Report created successfully' });
     } catch (error) {
         console.error('Error: ', error);
         return NextResponse.json({ error: 'Something went wrong...' }, { status: 500 });
@@ -97,7 +97,7 @@ export async function PUT(request: NextRequest) {
         report.updatedAt = new Date();
 
         await report.save();
-        return NextResponse.json({ error: false, message: 'Report updated successfully' });
+        return NextResponse.json({ message: 'Report updated successfully' });
 
     } catch (error) {
         console.error('Error: ', error);
