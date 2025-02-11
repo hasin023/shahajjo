@@ -2,7 +2,7 @@ import { Libraries, useJsApiLoader } from '@react-google-maps/api';
 import { ReactNode } from 'react';
 
 // Define a list of libraries to load from the Google Maps API
-const libraries = ['places'];
+const libraries = ['places', 'visualization'];
 
 // Define a function component called MapProvider that takes a children prop
 export function MapProvider({ children }: { children: ReactNode }) {

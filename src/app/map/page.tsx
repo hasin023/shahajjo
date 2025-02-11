@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { addDays } from "date-fns"
 import { Sidebar } from "@/components/Sidebar"
 import { MapProvider } from "@/components/MapProvider"
-import { GoogleMap, Marker } from "@react-google-maps/api"
+import { GoogleMap, Marker, HeatmapLayer } from "@react-google-maps/api"
 
 const containerStyle = {
     width: "100%",
@@ -49,7 +46,8 @@ const containerStyle = {
 
 export default function CrimeMap() {
     const [center, setCenter] = useState<{ lat: number; lng: number }>({lat: 23.8103, lng: 90.4125});
-    
+    const [crimes, setCrimes] = useState<any[]>([]);
+
     useEffect(() => {
         if ("geolocation" in navigator) {
           const watchId = navigator.geolocation.watchPosition(
@@ -79,10 +77,18 @@ export default function CrimeMap() {
       }, []);
 
     
-    const [dateRange, setDateRange] = useState({
-        from: new Date(),
-        to: addDays(new Date(), 7),
-    })
+      useEffect(() => {
+        const fetchCrimes = async () => {
+            try {
+                const response = await fetch(`/api/report?lat=${center.lat}&lng=${center.lng}&radius=10`);
+                const data = await response.json();
+                setCrimes(data.contents);
+            } catch (error) {
+                console.error("Error fetching crime reports:", error);
+            }
+        };
+        fetchCrimes();
+    }, [center]);
 
     return (
         <div className="flex min-h-screen">
@@ -103,6 +109,15 @@ export default function CrimeMap() {
                                     options={mapOptions}
                                 >
                                     <Marker position={center} />
+                                    {crimes.length > 0 && (
+                                    <HeatmapLayer
+                                        data={crimes.map((crime) => new google.maps.LatLng(crime.location.coordinates[1], crime.location.coordinates[0]))}
+                                        options={{
+                                        radius: 30,
+                                        opacity: 0.6,
+                                        }}
+                                    />
+                                    )}
                                 </GoogleMap>
                                </MapProvider>
                             </div>

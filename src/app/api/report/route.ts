@@ -10,6 +10,11 @@ export async function GET(request: NextRequest) {
         const search = searchParams.get("search") || ""
         const sort = searchParams.get("sort") || "Most Recent"
 
+         // Geolocation search params
+        const lat = parseFloat(searchParams.get("lat") || "0");
+        const lng = parseFloat(searchParams.get("lng") || "0");
+        const radius = parseFloat(searchParams.get("radius") || "0"); // In kilometers
+
         page = Math.max(1, page)
         limit = Math.max(1, Math.min(limit, 20))
         const skip = (page - 1) * limit
@@ -22,6 +27,13 @@ export async function GET(request: NextRequest) {
             query.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }]
         }
 
+        if (lat && lng && radius > 0) {
+            query.location = {
+                $geoWithin: {
+                    $centerSphere: [[lng, lat], radius / 6378.1], // Convert radius to radians (Earth radius ≈ 6378.1 km)
+                },
+            };
+        }
         // Determine sort order
         let sortOrder: any = {}
         switch (sort) {
