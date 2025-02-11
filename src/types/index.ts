@@ -41,6 +41,8 @@ export interface ICrimeReport {
 }
 
 export interface IComment {
+    _id: string;
+    crimeReportId: string;
     author: string;
     content: string;
     replyOf: string;

@@ -2,6 +2,7 @@ import { IComment } from '@/types';
 import { Model, model, models, Schema } from 'mongoose';
 
 const CommentSchema = new Schema<IComment>({
+    crimeReportId: { type: String, required: true },
     author: { type: String, required: true },
     content: { type: String, required: true },
     replyOf: { type: String, required: true },
