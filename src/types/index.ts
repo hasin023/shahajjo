@@ -14,9 +14,6 @@ export interface IUserInfo {
     email: string;
     avatar: string;
     bio: string;
-    reportsCount: number;
-    upvotes: number;
-    downvotes: number;
 }
 
 export interface ICrimeReport {
@@ -29,6 +26,7 @@ export interface ICrimeReport {
         coordinates: number[],
     },
     images: string[],
+    videos: string[],
     reportedBy: string,
     upvotes: number,
     downvotes: number

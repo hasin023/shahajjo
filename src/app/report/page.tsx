@@ -128,6 +128,7 @@ export default function ReportCrime() {
                 <div>
                   <Label htmlFor="image">Upload Image</Label>
                   <Input
+                    className="bg-white bg-opacity-20"
                     id="image"
                     name="images"
                     type="file"
@@ -138,6 +139,8 @@ export default function ReportCrime() {
                 {image && (
                   <Button
                     type="button"
+                    variant="destructive"
+                    className="text-sm"
                     onClick={generateDescription}
                     disabled={isGeneratingDescription}
                   >
@@ -147,13 +150,13 @@ export default function ReportCrime() {
                         Generating Description...
                       </>
                     ) : (
-                      "Generate AI Description"
+                      "Generate Description"
                     )}
                   </Button>
                 )}
                 <div>
                   <Label htmlFor="video">Upload Video (Optional)</Label>
-                  <Input id="video" type="file" accept="video/*" />
+                  <Input id="video" className="bg-white bg-opacity-20" type="file" accept="video/*" name="video" />
                 </div>
                 <div className="pt-6">
                   <Button type="submit" className="w-full" disabled={isLoading}>

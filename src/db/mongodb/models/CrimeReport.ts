@@ -11,6 +11,7 @@ const CrimeReportSchema = new Schema<ICrimeReport>({
         coordinates: { type: [Number], required: true, },
       },
     images: [{ type: String }], // Image URLs
+    videos: [{ type: String }], // Video URLs
     reportedBy: { type: String, ref: "user", required: true },
     upvotes: { type: Number, default: 0 }, // Number of upvotes
     downvotes: { type: Number, default: 0 }, // Number of downvotes
