@@ -20,7 +20,7 @@ const CrimeReportSchema = new Schema<ICrimeReport>({
   verificationScore: { type: Number, default: 0 }, // verification score based on votes and verified comments
   crimeTime: { type: Date, required: true, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  status: { type: String, enum: ['verified', 'investigating', 'resolved', 'not verified'], default: 'not verified' },
+  status: { type: String, enum: ['verified', 'investigating', 'resolved', 'not verified', 'fake'], default: 'not verified' },
   createdAt: { type: Date, default: Date.now }
 });
 CrimeReportSchema.index({ location: '2dsphere' });
