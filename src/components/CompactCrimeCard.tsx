@@ -81,7 +81,7 @@ export function CompactCrimeCard({ report, onVote, userVote }: CompactCrimeCardP
                                 <StatusIcon className="h-3 w-3 mr-1" />
                                 {report.status}
                             </Badge>
-                            <span>Posted by {report.reportedBy}</span>
+                            <span>Reported by {report.author?.name}</span>
                             <span>•</span>
                             <span>{formatDistanceToNow(new Date(report.createdAt))} ago</span>
                         </div>

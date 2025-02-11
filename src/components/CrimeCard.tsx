@@ -63,11 +63,11 @@ export function CrimeCard({ report, onVote, userVote }: CrimeCardProps) {
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6">
-                                <AvatarImage src={`https://avatar.vercel.sh/${report.reportedBy}`} />
+                                <AvatarImage src={report.author?.avatar || `https://avatar.vercel.sh/${report.reportedBy}`} />
                                 <AvatarFallback>{report.reportedBy[0]}</AvatarFallback>
                             </Avatar>
                             <span className="text-sm text-muted-foreground">
-                                Posted by {report.reportedBy} {formatDistanceToNow(new Date(report.createdAt))} ago
+                                Reported by {report.author?.name} {formatDistanceToNow(new Date(report.createdAt))} ago
                             </span>
                         </div>
                         <Badge variant="outline" className="gap-1">
