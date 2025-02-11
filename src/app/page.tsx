@@ -1,73 +1,68 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CrimeCard } from "@/components/CrimeCard"
 import { CompactCrimeCard } from "@/components/CompactCrimeCard"
 import { Sidebar } from "@/components/Sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// import { DatePickerWithRange } from "@/components/ui/date-range-picker"
 import { Card, CardContent } from "@/components/ui/card"
-import { addDays } from "date-fns"
 import { Filter, SlidersHorizontal, LayoutList, LayoutGrid } from "lucide-react"
-import { crimeReports } from "@/libs/dummy-data"
+import ReactPaginate from "react-paginate"
+import { ICrimeReport } from "@/types"
 
 const divisions = ["All", "Dhaka", "Chittagong", "Rajshahi", "Khulna", "Barisal", "Sylhet", "Rangpur", "Mymensingh"]
 const crimeTypes = ["All", "Theft", "Robbery", "Assault", "Burglary", "Vandalism", "Fraud", "Accident"]
 const sortOptions = ["Most Recent", "Most Upvoted", "Highest Verification Score"]
+
+interface ApiResponse {
+  contents: ICrimeReport[]
+  totalItems: number
+  totalPages: number
+  currentPage: number
+}
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedDivision, setSelectedDivision] = useState("All")
   const [selectedCrimeType, setSelectedCrimeType] = useState("All")
   const [selectedSort, setSelectedSort] = useState("Most Recent")
-  const [dateRange, setDateRange] = useState({
-    from: new Date(),
-    to: addDays(new Date(), 7),
-  })
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<"full" | "compact">("full")
-  const [userVotes, setUserVotes] = useState<Record<string, "up" | "down" | null>>({})
+  const [userVotes, setUserVotes] = useState<Record<string, "upvote" | "downvote" | null>>({})
+  const [crimeReports, setCrimeReports] = useState<ICrimeReport[]>([])
+  const [totalPages, setTotalPages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(0)
 
-  const handleVote = (reportId: string, direction: "up" | "down") => {
+  useEffect(() => {
+    fetchCrimeReports()
+  }, [searchQuery, selectedDivision, selectedCrimeType, selectedSort, currentPage])
+
+  const fetchCrimeReports = async () => {
+    try {
+      const response = await fetch(
+        `/api/report?page=${currentPage + 1}&search=${searchQuery}&division=${selectedDivision}&crimeType=${selectedCrimeType}&sort=${selectedSort}`,
+      )
+      const data: ApiResponse = await response.json()
+      setCrimeReports(data.contents)
+      setTotalPages(data.totalPages)
+    } catch (error) {
+      console.error("Failed to fetch crime reports:", error)
+    }
+  }
+
+  const handleVote = (reportId: string, direction: "upvote" | "downvote") => {
     setUserVotes((prev) => ({
       ...prev,
       [reportId]: prev[reportId] === direction ? null : direction,
     }))
+    // TODO: Implement API call to update vote on the server
   }
 
-  const filteredReports = crimeReports.filter((report) => {
-    if (searchQuery) {
-      const searchLower = searchQuery.toLowerCase()
-      const titleMatch = report.title.toLowerCase().includes(searchLower)
-      const descriptionMatch = report.description.toLowerCase().includes(searchLower)
-      if (!titleMatch && !descriptionMatch) return false
-    }
-
-    if (selectedDivision !== "All" && !report.location_name.includes(selectedDivision)) {
-      return false
-    }
-
-    if (selectedCrimeType !== "All" && report.status !== selectedCrimeType) {
-      return false
-    }
-
-    return true
-  })
-
-  const sortedReports = filteredReports.sort((a, b) => {
-    switch (selectedSort) {
-      case "Most Recent":
-        return b.createdAt.getTime() - a.createdAt.getTime()
-      case "Most Upvoted":
-        return b.upvotes - b.downvotes - (a.upvotes - a.downvotes)
-      case "Highest Verification Score":
-        return Number(b.verified) - Number(a.verified)
-      default:
-        return 0
-    }
-  })
+  const handlePageChange = (selectedItem: { selected: number }) => {
+    setCurrentPage(selectedItem.selected)
+  }
 
   const CrimeCardComponent = viewMode === "full" ? CrimeCard : CompactCrimeCard
 
@@ -147,9 +142,6 @@ export default function Home() {
                         ))}
                       </SelectContent>
                     </Select>
-                    {/* <div className="sm:col-span-2 md:col-span-3">
-                      <DatePickerWithRange date={dateRange} setDate={setDateRange} />
-                    </div> */}
                   </div>
                 </CardContent>
               </Card>
@@ -157,13 +149,40 @@ export default function Home() {
           </div>
 
           <div className="mt-6 space-y-4">
-            {sortedReports.map((report) => (
-              <CrimeCardComponent key={report.id} report={report} onVote={handleVote} userVote={userVotes[report.id]} />
+            {crimeReports.map((report) => (
+              <CrimeCardComponent
+                key={report._id}
+                report={report}
+                onVote={handleVote}
+                userVote={userVotes[report._id] as "upvote" | "downvote" | null}
+              />
             ))}
-            {sortedReports.length === 0 && (
+            {crimeReports.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">No crimes found matching your criteria</div>
             )}
           </div>
+
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            pageCount={totalPages}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageChange}
+            containerClassName={"flex justify-center items-center space-x-2 mt-8"}
+            pageClassName={
+              "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+            }
+            previousClassName={
+              "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+            }
+            nextClassName={
+              "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+            }
+            disabledClassName={"opacity-50 cursor-not-allowed"}
+            activeClassName={"bg-primary text-primary-foreground"}
+          />
         </div>
       </main>
     </div>

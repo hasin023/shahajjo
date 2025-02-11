@@ -12,9 +12,9 @@ interface CrimeFeedProps {
 }
 
 export default function CrimeFeed({ searchQuery, selectedDivision, selectedCrimeType, selectedSort }: CrimeFeedProps) {
-    const [userVotes, setUserVotes] = useState<Record<string, "up" | "down" | null>>({})
+    const [userVotes, setUserVotes] = useState<Record<string, "upvote" | "downvote" | null>>({})
 
-    const handleVote = (reportId: string, direction: "up" | "down") => {
+    const handleVote = (reportId: string, direction: "upvote" | "downvote") => {
         setUserVotes((prev) => ({
             ...prev,
             [reportId]: prev[reportId] === direction ? null : direction,
@@ -49,7 +49,7 @@ export default function CrimeFeed({ searchQuery, selectedDivision, selectedCrime
     return (
         <section className="space-y-6">
             {filteredAndSortedReports.map((report) => (
-                <CrimeCard key={report.id} report={report} onVote={handleVote} userVote={userVotes[report.id]} />
+                <CrimeCard key={report._id} report={report} onVote={handleVote} userVote={userVotes[report._id]} />
             ))}
             {filteredAndSortedReports.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">No crimes found matching your criteria</div>

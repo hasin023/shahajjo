@@ -4,7 +4,10 @@ export type User = {
     id: string;
     name: string;
     email: string;
-    phoneNumber: string;
+    bio?: string;
+    avatar?: string;
+    phoneNumber?: string;
+    address?: string;
     isVerified: boolean;
     role: 'admin' | 'user';
 }

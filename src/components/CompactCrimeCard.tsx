@@ -4,37 +4,37 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock } from "lucide-react"
+import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { ICrimeReport } from "@/types"
 
 const statusIcons = {
     verified: Shield,
-    investigating: AlertTriangle,
-    resolved: Clock,
+    investigating: Clock,
+    resolved: CircleCheckBig,
     "not verified": AlertTriangle,
 }
 
 const statusColors = {
     verified: "text-green-500",
     investigating: "text-yellow-500",
-    resolved: "text-muted-foreground",
+    resolved: "text-blue-500",
     "not verified": "text-red-500",
 }
 
 interface CompactCrimeCardProps {
     report: ICrimeReport
-    onVote: (reportId: string, direction: "up" | "down") => void
-    userVote: "up" | "down" | null
+    onVote: (reportId: string, direction: "upvote" | "downvote") => void
+    userVote: "upvote" | "downvote" | null
 }
 
 export function CompactCrimeCard({ report, onVote, userVote }: CompactCrimeCardProps) {
-    const StatusIcon = statusIcons[report.status]
+    const StatusIcon = statusIcons[report.status as keyof typeof statusIcons]
     const voteCount = report.upvotes - report.downvotes
 
     return (
         <Card className="hover:bg-accent/50 transition-colors">
-            <Link href={`/${report.id}`}>
+            <Link href={`/${report._id}`}>
                 <div className="flex items-center p-2 gap-4">
                     {/* Vote buttons */}
                     <div className="flex flex-col items-center gap-1">
@@ -42,9 +42,9 @@ export function CompactCrimeCard({ report, onVote, userVote }: CompactCrimeCardP
                             whileTap={{ scale: 0.9 }}
                             onClick={(e) => {
                                 e.preventDefault()
-                                onVote(report.id, "up")
+                                onVote(report._id, "upvote")
                             }}
-                            className={`p-0.5 rounded-sm transition-colors ${userVote === "up" ? "text-primary" : "text-muted-foreground"
+                            className={`p-0.5 rounded-sm transition-colors ${userVote === "upvote" ? "text-primary" : "text-muted-foreground"
                                 }`}
                         >
                             <ArrowBigUp className="h-4 w-4" />
@@ -54,9 +54,9 @@ export function CompactCrimeCard({ report, onVote, userVote }: CompactCrimeCardP
                             whileTap={{ scale: 0.9 }}
                             onClick={(e) => {
                                 e.preventDefault()
-                                onVote(report.id, "down")
+                                onVote(report._id, "downvote")
                             }}
-                            className={`p-0.5 rounded-sm transition-colors ${userVote === "down" ? "text-destructive" : "text-muted-foreground"
+                            className={`p-0.5 rounded-sm transition-colors ${userVote === "downvote" ? "text-destructive" : "text-muted-foreground"
                                 }`}
                         >
                             <ArrowBigDown className="h-4 w-4" />
@@ -77,7 +77,7 @@ export function CompactCrimeCard({ report, onVote, userVote }: CompactCrimeCardP
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Badge variant="secondary" className={`${statusColors[report.status]}`}>
+                            <Badge variant="secondary" className={`${statusColors[report.status as keyof typeof statusColors]}`}>
                                 <StatusIcon className="h-3 w-3 mr-1" />
                                 {report.status}
                             </Badge>

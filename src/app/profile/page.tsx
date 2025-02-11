@@ -15,12 +15,9 @@ import { shapes } from '@dicebear/collection';
 import { toPng } from '@dicebear/converter';
 import { useRouter } from "next/navigation"
 import { Sidebar } from "@/components/Sidebar"
+import { Separator } from "@radix-ui/react-dropdown-menu"
 
 const dummyUser = {
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "/placeholder.svg",
-    bio: "Concerned citizen and active community member.",
     reportsCount: 15,
     upvotes: 87,
     downvotes: 3,
@@ -57,6 +54,11 @@ export default function Profile() {
         async function generateAvatar() {
             if (!user) return;
 
+            if (user.avatar) {
+                setAvatarUrl(user.avatar);
+                return;
+            }
+
             const avatar = createAvatar(shapes, {
                 seed: user.name,
             });
@@ -76,18 +78,24 @@ export default function Profile() {
         router.push("/verify");
     }
 
+    const handleEditProfile = async () => {
+        router.push("/profile/edit");
+    }
+
+    console.log(avatarUrl)
+
     return (
         <div className="flex min-h-screen">
             <Sidebar />
             <main className="flex-1">
                 <div className="container mx-auto py-6 px-4 space-y-6">
                     <Card>
-                        <CardHeader className="flex flex-row items-center gap-4">
+                        <CardHeader className="flex flex-row items-start gap-4">
                             <Avatar className="w-20 h-20">
                                 <AvatarImage src={avatarUrl} alt={user.name} />
                                 <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="flex-grow">
+                            <div className="flex-grow space-y-1">
                                 <CardTitle className="text-lg font-semibold">{user.name}</CardTitle>
                                 <CardDescription className="text-sm text-muted-foreground">{user.email}</CardDescription>
                                 <Badge
@@ -96,16 +104,29 @@ export default function Profile() {
                                 >
                                     {user.isVerified ? "Verified" : "Unverified"}
                                 </Badge>
+                                <p className="text-sm mt-2">{user.bio}</p> {/* Bio placed right below name & email */}
                             </div>
 
-                            <div className="flex gap-2 items-center justify-end mt-4">
-                                <Button variant="outline">Edit Profile</Button>
+                            <div className="flex gap-2 items-center justify-end">
+                                <Button onClick={handleEditProfile} variant="outline">Edit Profile</Button>
                                 {!user.isVerified && <Button onClick={handleVerify} variant="default">Verify</Button>}
                             </div>
-
                         </CardHeader>
-                        <CardContent>
-                            <p className="mb-4">{dummyUser.bio}</p>
+
+                        <CardContent className="space-y-6">
+                            {/* Contact Info Section */}
+                            <div className="border-t pt-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <p className="text-sm">
+                                        <strong>Phone:</strong> {user.phoneNumber || "Not provided"}
+                                    </p>
+                                    <p className="text-sm">
+                                        <strong>Address:</strong> {user.address || "Not provided"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Stats Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                                 <div>
                                     <p className="text-2xl font-bold">{dummyUser.reportsCount}</p>
@@ -197,6 +218,7 @@ export default function Profile() {
                 </div>
             </main>
         </div>
+
     )
 }
 

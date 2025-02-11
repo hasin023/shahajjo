@@ -12,12 +12,13 @@ export interface IUser {
 export interface IUserInfo {
     userId: string;
     email: string;
-    avatar: string;
-    bio: string;
+    avatar?: string;
+    bio?: string;
+    address?: string;
 }
 
 export interface ICrimeReport {
-    id: string;
+    _id: string;
     title: string;
     description: string;
     location_name: string,
@@ -32,6 +33,7 @@ export interface ICrimeReport {
     downvotes: number
     comments: string[],
     verified: boolean,
+    verificationScore?: number,
     status: 'verified' | 'investigating' | 'resolved' | 'not verified',
     crimeTime: Date,
     updatedAt: Date,
@@ -56,6 +58,6 @@ export interface IVote {
 }
 
 export type Address = {
-    location: {lat: number, lng: number};
+    location: { lat: number, lng: number };
     name?: string;
-  }
+}
