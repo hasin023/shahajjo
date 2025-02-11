@@ -67,14 +67,14 @@ export function DetailedCrimeCard({ report, onVote, userVote }: DetailedCrimeCar
                 )}
                 <div className="flex items-center space-x-4 mt-4">
                     <button
-                        onClick={() => onVote(report.id, "up")}
+                        onClick={() => onVote(report._id, "up")}
                         className={`flex items-center space-x-1 ${userVote === "up" ? "text-green-500" : "text-muted-foreground"}`}
                     >
                         <ArrowBigUp className="w-5 h-5" />
                         <span>{report.upvotes}</span>
                     </button>
                     <button
-                        onClick={() => onVote(report.id, "down")}
+                        onClick={() => onVote(report._id, "down")}
                         className={`flex items-center space-x-1 ${userVote === "down" ? "text-red-500" : "text-muted-foreground"}`}
                     >
                         <ArrowBigDown className="w-5 h-5" />

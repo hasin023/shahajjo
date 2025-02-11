@@ -18,7 +18,7 @@ export interface IUserInfo {
 }
 
 export interface ICrimeReport {
-    id: string;
+    _id: string;
     title: string;
     description: string;
     location_name: string,
