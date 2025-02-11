@@ -11,13 +11,13 @@ import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
 import toast from "react-hot-toast"
 
 import { useRouter } from "next/navigation"
-import { userUserLoaded, useUser } from "@/hooks/user"
+import { useUserLoaded, useUser } from "@/hooks/user"
 import OtpInput from "@/components/OtpInput"
 
 export default function VerifyAccount() {
     const router = useRouter()
     const [user, setUser] = useUser();
-    const [userLoaded, _] = userUserLoaded();
+    const [userLoaded, _] = useUserLoaded();
 
     const [phoneNumber, setPhoneNumber] = useState("")
     const [otp, setOtp] = useState("")

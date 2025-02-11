@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import React, { FormEvent, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { User, Mail, Lock, Check, X } from 'lucide-react'
+import { User, Mail, Lock, Check, X, EyeOff, Eye } from 'lucide-react'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,7 +20,7 @@ function SignUp() {
         { text: "our" },
         { text: "platform", className: "text-blue-500 dark:text-blue-500" }
     ]
-    
+
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -30,7 +30,7 @@ function SignUp() {
         password: '',
         confirmPassword: ''
     })
-    
+
     const [validations, setValidations] = useState({
         name: false,
         email: false,
@@ -73,7 +73,7 @@ function SignUp() {
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        
+
         if (!isFormValid()) {
             toast.error("Please fill all fields correctly")
             return
@@ -137,8 +137,8 @@ function SignUp() {
                                         />
                                         {formData.name && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                {validations.name ? 
-                                                    <Check className="h-5 w-5 text-green-500" /> : 
+                                                {validations.name ?
+                                                    <Check className="h-5 w-5 text-green-500" /> :
                                                     <X className="h-5 w-5 text-red-500" />
                                                 }
                                             </div>
@@ -165,8 +165,8 @@ function SignUp() {
                                         />
                                         {formData.email && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                {validations.email ? 
-                                                    <Check className="h-5 w-5 text-green-500" /> : 
+                                                {validations.email ?
+                                                    <Check className="h-5 w-5 text-green-500" /> :
                                                     <X className="h-5 w-5 text-red-500" />
                                                 }
                                             </div>
@@ -180,46 +180,32 @@ function SignUp() {
                                 {/* Password field */}
                                 <div className="space-y-2">
                                     <Label htmlFor="password">Password</Label>
-                   
 
-<div className="relative">
-    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
-    <Input
-        id="password"
-        name="password"
-        type={showPassword ? "text" : "password"}
-        value={formData.password}
-        onChange={handleInputChange}
-        placeholder="Enter your password"
-        className={`pl-10 pr-28 ${formData.password && !validations.password ? 'border-red-500' : ''}`}
-    />
-    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex">
-        {formData.password && (
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-full px-2 py-2 text-xs hover:bg-transparent"
-                onClick={() => {
-                    navigator.clipboard.writeText(formData.password)
-                    toast.success('Password copied!')
-                }}
-            >
-                Copy
-            </Button>
-        )}
-        <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-full px-3 py-2 hover:bg-transparent"
-            onClick={() => setShowPassword(!showPassword)}
-        >
-            {showPassword ? "Hide" : "Show"}
-        </Button>
-    </div>
-</div>
-                                    
+
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                                        <Input
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter your password"
+                                            className={`pl-10 pr-28 ${formData.password && !validations.password ? 'border-red-500' : ''}`}
+                                        />
+                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex">
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-full px-3 py-2 hover:bg-transparent"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            </Button>
+                                        </div>
+                                    </div>
+
                                     {/* Password requirements */}
                                     {formData.password && (
                                         <div className="mt-2">
@@ -257,8 +243,8 @@ function SignUp() {
                                         />
                                         {formData.confirmPassword && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                {validations.confirmPassword ? 
-                                                    <Check className="h-5 w-5 text-green-500" /> : 
+                                                {validations.confirmPassword ?
+                                                    <Check className="h-5 w-5 text-green-500" /> :
                                                     <X className="h-5 w-5 text-red-500" />
                                                 }
                                             </div>
@@ -281,8 +267,8 @@ function SignUp() {
 
                                 <p className="text-sm text-center text-muted-foreground">
                                     Already have an account?{" "}
-                                    <Link 
-                                        href="/login" 
+                                    <Link
+                                        href="/login"
                                         className="text-primary hover:underline font-medium"
                                     >
                                         Login

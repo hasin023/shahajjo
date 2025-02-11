@@ -8,6 +8,22 @@ import { uploadFile } from '@/libs/file-upload';
 import { NextResponse, NextRequest } from 'next/server';
 import crypto from 'node:crypto';
 
+export async function GET(request: NextRequest) {
+    try {
+        const loggedInUser = await getAuth(request);
+        if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+        await dbConnect()
+
+        const reports = await CrimeReport.find({ reportedBy: loggedInUser.id }).sort({ createdAt: -1 });
+
+        return NextResponse.json({ reports })
+    } catch (error) {
+        console.error("Error: ", error)
+        return NextResponse.json({ error: "Something went wrong..." }, { status: 500 })
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const loggedInUser = await getAuth(request);

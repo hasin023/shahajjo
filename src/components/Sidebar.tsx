@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/libs/utils"
-import { ChevronLeft, Home, Map, BarChart2, AlertTriangle, Settings, PlusCircle, Menu } from "lucide-react"
+import { ChevronLeft, Home, Map, BarChart2, AlertCircle, Settings, PlusCircle, Menu } from "lucide-react"
 
 const sidebarLinks = [
     {
@@ -19,21 +19,27 @@ const sidebarLinks = [
         icon: Map,
         href: "/map",
     },
-    {
-        title: "Statistics",
-        icon: BarChart2,
-        href: "/stats",
-    },
+    // {
+    //     title: "Statistics",
+    //     icon: BarChart2,
+    //     href: "/stats",
+    // },
     {
         title: "Report Crime",
-        icon: AlertTriangle,
+        icon: AlertCircle,
         href: "/report",
     },
+    // {
+    //     title: "Settings",
+    //     icon: Settings,
+    //     href: "/settings",
+    // },
     {
-        title: "Settings",
-        icon: Settings,
-        href: "/settings",
+        title: "Leaderboard",
+        icon: BarChart2,
+        href: "/leaderboard",
     },
+
 ]
 
 export function Sidebar() {

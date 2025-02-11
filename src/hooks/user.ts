@@ -16,4 +16,4 @@ const userAtom = atom<User | null>(null);
 const userLoadedAtom = atom(false);
 
 export const useUser = () => useAtom(userAtom);
-export const userUserLoaded = () => useAtom(userLoadedAtom);
+export const useUserLoaded = () => useAtom(userLoadedAtom);

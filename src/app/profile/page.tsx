@@ -1,21 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-
-import { userUserLoaded, useUser } from "@/hooks/user";
-
-import { createAvatar } from '@dicebear/core';
-import { shapes } from '@dicebear/collection';
-import { toPng } from '@dicebear/converter';
-import { useRouter } from "next/navigation"
 import { Sidebar } from "@/components/Sidebar"
-import { Separator } from "@radix-ui/react-dropdown-menu"
+import { useUserLoaded, useUser } from "@/hooks/user";
+import { createAvatar } from "@dicebear/core"
+import { shapes } from "@dicebear/collection"
+import { toPng } from "@dicebear/converter"
+import { format } from "date-fns"
+import Link from "next/link"
 
 const dummyUser = {
     reportsCount: 15,
@@ -29,12 +28,6 @@ const dummyUser = {
     ],
 }
 
-const dummyReports = [
-    { id: 1, title: "Robbery at Main Street", date: "2023-05-15", status: "Verified" },
-    { id: 2, title: "Vehicle Break-in at Central Park", date: "2023-05-14", status: "Under Investigation" },
-    { id: 3, title: "Vandalism at City Hall", date: "2023-05-10", status: "Resolved" },
-]
-
 const dummyActivityData = [
     { name: "Jan", reports: 4 },
     { name: "Feb", reports: 3 },
@@ -43,78 +36,112 @@ const dummyActivityData = [
     { name: "May", reports: 1 },
 ]
 
+interface UserReport {
+    _id: string
+    title: string
+    description: string
+    location_name: string
+    images: string[]
+    videos: string[]
+    status: string
+    createdAt: string
+}
+
 export default function Profile() {
     const [activeTab, setActiveTab] = useState("overview")
-    const [user, setUser] = useUser();
-    const [userLoaded, _] = userUserLoaded();
-    const [avatarUrl, setAvatarUrl] = useState<string>("/placeholder.svg");
-    const router = useRouter();
+    const [user, setUser] = useUser()
+    const [userLoaded, _] = useUserLoaded()
+    const [avatarUrl, setAvatarUrl] = useState<string>("/placeholder.svg")
+    const [userReports, setUserReports] = useState<UserReport[]>([])
+    const router = useRouter()
 
     useEffect(() => {
         async function generateAvatar() {
-            if (!user) return;
+            if (!user) return
 
             if (user.avatar) {
-                setAvatarUrl(user.avatar);
-                return;
+                setAvatarUrl(user.avatar)
+                return
             }
 
             const avatar = createAvatar(shapes, {
                 seed: user.name,
-            });
-            const svg = avatar.toString();
-            const png = await toPng(svg);
-            const avatarUri = await png.toDataUri();
-            setAvatarUrl(avatarUri);
+            })
+            const svg = avatar.toString()
+            const png = await toPng(svg)
+            const avatarUri = await png.toDataUri()
+            setAvatarUrl(avatarUri)
         }
 
-        generateAvatar();
-    }, [user?.name]);
+        generateAvatar()
+    }, [user])
 
-    if (!userLoaded) return <div className="text-center">Loading...</div>;
-    if (!user) return <div className="text-center">Not logged in</div>;
+    useEffect(() => {
+        async function fetchUserReports() {
+            try {
+                const response = await fetch("/api/user/report")
+                if (response.ok) {
+                    const data = await response.json()
+                    setUserReports(data.reports)
+                } else {
+                    console.error("Failed to fetch user reports")
+                }
+            } catch (error) {
+                console.error("Error fetching user reports:", error)
+            }
+        }
+
+        if (userLoaded && user) {
+            fetchUserReports()
+        }
+    }, [userLoaded, user])
+
+    if (!userLoaded) return <div className="text-center">Loading...</div>
+    if (!user) return <div className="text-center">Not logged in</div>
 
     const handleVerify = async () => {
-        router.push("/verify");
+        router.push("/verify")
     }
 
     const handleEditProfile = async () => {
-        router.push("/profile/edit");
+        router.push("/profile/edit")
     }
 
-    console.log(avatarUrl)
-
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-background">
             <Sidebar />
             <main className="flex-1">
                 <div className="container mx-auto py-6 px-4 space-y-6">
-                    <Card>
-                        <CardHeader className="flex flex-row items-start gap-4">
-                            <Avatar className="w-20 h-20">
+                    <Card className="w-full">
+                        <CardHeader className="flex flex-col sm:flex-row items-start gap-4">
+                            <Avatar className="w-24 h-24">
                                 <AvatarImage src={avatarUrl} alt={user.name} />
                                 <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="flex-grow space-y-1">
-                                <CardTitle className="text-lg font-semibold">{user.name}</CardTitle>
-                                <CardDescription className="text-sm text-muted-foreground">{user.email}</CardDescription>
+                            <div className="flex-grow space-y-2">
+                                <CardTitle className="text-2xl font-bold">{user.name}</CardTitle>
+                                <CardDescription className="text-base">{user.email}</CardDescription>
                                 <Badge
                                     variant={user.isVerified ? "secondary" : "destructive"}
-                                    className={`${user.isVerified ? "bg-green-500 text-white hover:bg-green-500" : ""}`}
+                                    className={`${user.isVerified ? "bg-green-500 text-white hover:bg-green-600" : ""}`}
                                 >
                                     {user.isVerified ? "Verified" : "Unverified"}
                                 </Badge>
-                                <p className="text-sm mt-2">{user.bio}</p> {/* Bio placed right below name & email */}
+                                <p className="text-sm mt-2">{user.bio}</p>
                             </div>
-
-                            <div className="flex gap-2 items-center justify-end">
-                                <Button onClick={handleEditProfile} variant="outline">Edit Profile</Button>
-                                {!user.isVerified && <Button onClick={handleVerify} variant="default">Verify</Button>}
+                            <div className="flex gap-2 items-center justify-end mt-4 sm:mt-0">
+                                <Button onClick={handleEditProfile} variant="outline">
+                                    Edit Profile
+                                </Button>
+                                {!user.isVerified && (
+                                    <Button onClick={handleVerify} variant="default">
+                                        Verify
+                                    </Button>
+                                )}
                             </div>
                         </CardHeader>
 
                         <CardContent className="space-y-6">
-                            {/* Contact Info Section */}
                             <div className="border-t pt-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <p className="text-sm">
@@ -126,21 +153,20 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            {/* Stats Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                                <div>
-                                    <p className="text-2xl font-bold">{dummyUser.reportsCount}</p>
+                                <div className="bg-primary/10 p-4 rounded-lg">
+                                    <p className="text-2xl font-bold">{userReports.length}</p>
                                     <p className="text-muted-foreground">Reports</p>
                                 </div>
-                                <div>
+                                <div className="bg-primary/10 p-4 rounded-lg">
                                     <p className="text-2xl font-bold">{dummyUser.upvotes}</p>
                                     <p className="text-muted-foreground">Upvotes</p>
                                 </div>
-                                <div>
+                                <div className="bg-primary/10 p-4 rounded-lg">
                                     <p className="text-2xl font-bold">{dummyUser.downvotes}</p>
                                     <p className="text-muted-foreground">Downvotes</p>
                                 </div>
-                                <div>
+                                <div className="bg-primary/10 p-4 rounded-lg">
                                     <p className="text-2xl font-bold">{(dummyUser.verificationScore * 100).toFixed(0)}%</p>
                                     <p className="text-muted-foreground">Verification Score</p>
                                 </div>
@@ -175,17 +201,42 @@ export default function Profile() {
                         <TabsContent value="reports">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>My Crime Reports</CardTitle>
+                                    <CardTitle>Reports History</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <ul className="space-y-4">
-                                        {dummyReports.map((report) => (
-                                            <li key={report.id} className="flex justify-between items-center border-b pb-2">
-                                                <div>
-                                                    <p className="font-semibold">{report.title}</p>
-                                                    <p className="text-sm text-muted-foreground">{report.date}</p>
+                                        {userReports.map((report) => (
+                                            <li
+                                                key={report._id}
+                                                className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4"
+                                            >
+                                                <div className="flex-grow">
+                                                    <Link
+                                                        href={`/${report._id}`}
+                                                        className="font-semibold hover:text-primary transition-colors"
+                                                    >
+                                                        {report.title}
+                                                    </Link>
+                                                    <p className="text-sm text-muted-foreground mt-1">{report.location_name}</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {format(new Date(report.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+                                                    </p>
                                                 </div>
-                                                <Badge>{report.status}</Badge>
+                                                <div className="mt-2 sm:mt-0">
+                                                    <Badge className="ml-2" variant={report.status === "verified" ? "default" : "secondary"}>
+                                                        {report.status}
+                                                    </Badge>
+                                                    {report.images.length > 0 && (
+                                                        <Badge className="ml-2" variant="outline">
+                                                            {report.images.length} image{report.images.length > 1 ? "s" : ""}
+                                                        </Badge>
+                                                    )}
+                                                    {report.videos.length > 0 && (
+                                                        <Badge className="ml-2" variant="outline">
+                                                            {report.videos.length} video{report.videos.length > 1 ? "s" : ""}
+                                                        </Badge>
+                                                    )}
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
@@ -200,7 +251,7 @@ export default function Profile() {
                                 <CardContent>
                                     <ul className="space-y-4">
                                         {dummyUser.achievements.map((achievement, index) => (
-                                            <li key={index} className="flex items-center gap-4">
+                                            <li key={index} className="flex items-center gap-4 bg-primary/5 p-4 rounded-lg">
                                                 <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold">
                                                     {index + 1}
                                                 </div>
@@ -218,7 +269,6 @@ export default function Profile() {
                 </div>
             </main>
         </div>
-
     )
 }
 
