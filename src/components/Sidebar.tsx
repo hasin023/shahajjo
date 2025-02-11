@@ -59,7 +59,7 @@ export function Sidebar() {
             )}
         >
             <div className="flex h-14 items-center justify-between border-b px-3">
-                {!isCollapsed && <span className="font-semibold">Navigation</span>}
+                {!isCollapsed && <span className="font-semibold"></span>}
                 <Button variant="ghost" size="icon" className="ml-auto" onClick={() => setIsCollapsed(!isCollapsed)}>
                     {isCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
