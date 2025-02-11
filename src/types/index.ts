@@ -28,6 +28,7 @@ export interface ICrimeReport {
     },
     images: string[],
     videos: string[],
+    videoDescription?: string,
     reportedBy: string,
     upvotes: number,
     downvotes: number
@@ -41,6 +42,8 @@ export interface ICrimeReport {
 }
 
 export interface IComment {
+    _id: string;
+    crimeReportId: string;
     author: string;
     content: string;
     replyOf: string;

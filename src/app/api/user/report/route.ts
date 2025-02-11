@@ -8,6 +8,22 @@ import { uploadFile } from '@/libs/file-upload';
 import { NextResponse, NextRequest } from 'next/server';
 import crypto from 'node:crypto';
 
+export async function GET(request: NextRequest) {
+    try {
+        const loggedInUser = await getAuth(request);
+        if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+        await dbConnect()
+
+        const reports = await CrimeReport.find({ reportedBy: loggedInUser.id }).sort({ createdAt: -1 });
+
+        return NextResponse.json({ reports })
+    } catch (error) {
+        console.error("Error: ", error)
+        return NextResponse.json({ error: "Something went wrong..." }, { status: 500 })
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const loggedInUser = await getAuth(request);
@@ -24,6 +40,7 @@ export async function POST(request: NextRequest) {
         const lng = formData.get('lng');
         const images = formData.getAll('images') as File[];
         const videos = formData.getAll('videos') as File[];
+        const videoDescription = formData.get('videoDescription') as string;
 
         if (!title || !description || !location_name || !location_name)
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -39,6 +56,7 @@ export async function POST(request: NextRequest) {
             title,
             description,
             location_name,
+            videoDescription,
             crimeTime: new Date(crimeTime),
             location: {
                 type: 'Point',
@@ -71,6 +89,7 @@ export async function PUT(request: NextRequest) {
         const lng = formData.get('lng');
         const images = formData.getAll('images') as File[];
         const videos = formData.getAll('videos') as File[];
+        const videoDescription = formData.get('videoDescription') as string;
 
         if (!reportId) return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
 
@@ -95,6 +114,7 @@ export async function PUT(request: NextRequest) {
         report.images = imageUrls;
         report.videos = videoUrls;
         report.updatedAt = new Date();
+        report.videoDescription = videoDescription || report.videoDescription;
 
         await report.save();
         return NextResponse.json({ message: 'Report updated successfully' });

@@ -6,18 +6,17 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { usePathname, useRouter } from "next/navigation"
 import { AlertCircle, BarChart2, FileText, Home, Map, User, LogOutIcon } from "lucide-react"
 import { NotificationDropdown } from "./NotificationDropdown"
-import { userUserLoaded, useUser } from "@/hooks/user"
+import { useUserLoaded, useUser } from "@/hooks/user"
 
 const Navbar = () => {
     const pathname = usePathname()
     const router = useRouter()
     const [user, setUser] = useUser();
-    const [userLoaded, _] = userUserLoaded();
+    const [userLoaded, _] = useUserLoaded();
 
     const navItems = [
         { href: "/", label: "Home", icon: Home },
         { href: "/report", label: "Report Crime", icon: AlertCircle },
-        { href: "/leaderboard", label: "Leaderboard", icon: BarChart2 },
         { href: "/profile", label: "Profile", icon: User, role: "user" },
         { href: "/admin", label: "Admin", icon: FileText, role: "admin" },
     ]

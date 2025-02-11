@@ -6,8 +6,13 @@ import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Marquee } from '../../components/magicui/marquee';
-import { Eye, EyeOffIcon, Loader2, AlertTriangle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from "@/libs/utils";
 
 interface LoginFormData {
   email: string;
@@ -33,24 +38,21 @@ const Login = () => {
   ];
 
   useEffect(() => {
-    // Clear login attempts after 30 minutes
     const timer = setTimeout(() => setAttempts(0), 1800000);
     return () => clearTimeout(timer);
   }, [attempts]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
     }
 
     setErrors(newErrors);
@@ -60,7 +62,6 @@ const Login = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name as keyof LoginFormData]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -87,7 +88,7 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-        credentials: 'include', // Important for handling cookies
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -132,31 +133,30 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left side with 3D Marquee */}
+    <div className="flex flex-col md:flex-row">
       <motion.div
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="hidden md:w-1/2 bg-gradient-to-br from-purple-600 via-blue-500 to-cyan-400 p-6 md:p-12 sm:flex flex-col relative overflow-hidden"
+        className="hidden md:w-1/2 bg-gradient-to-br from-purple-600 via-blue-500 to-cyan-400 p-6 md:p-12 sm:flex flex-col relative overflow-hidden dark:from-purple-900 dark:via-blue-800 dark:to-cyan-700"
       >
-        <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] dark:bg-black/40" />
 
         <motion.div
-          className="text-white relative z-10 mb-8"
+          className="relative z-10 mb-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           <motion.h1
             variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90"
+            className="text-4xl md:text-5xl font-bold mb-4 text-white dark:text-white"
           >
             সাহায্য
           </motion.h1>
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl font-light text-white/95 leading-relaxed"
+            className="text-lg md:text-xl font-light text-white/95 dark:text-white/90 leading-relaxed"
           >
             Keeping you up to date with the latest news, articles and more.
           </motion.p>
@@ -178,7 +178,7 @@ const Login = () => {
                   whileHover={{ scale: 1.05, rotateY: 12 }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-purple-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-purple-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg dark:from-purple-900/40" />
                   <img
                     src={image.img}
                     alt={image.alt}
@@ -189,153 +189,124 @@ const Login = () => {
               ))}
             </Marquee>
           </div>
-          <div className="pointer-events-none absolute inset-0 bg-inherit opacity-60" />
         </div>
       </motion.div>
 
-      {/* Right side with login form */}
       <motion.div
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-        className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 bg-gray-50"
+        className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 bg-background"
       >
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="w-full max-w-md"
-        >
-          <motion.div
-            variants={itemVariants}
-            className="text-center mb-8"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-base text-gray-600">Sign in to continue to সাহায্য</p>
-          </motion.div>
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-1">
+            <CardTitle className="text-3xl md:text-4xl font-bold">Welcome Back</CardTitle>
+            <CardDescription>Sign in to continue to সাহায্য</CardDescription>
+          </CardHeader>
 
-          <AnimatePresence>
-            {attempts >= 3 && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="mb-4"
-              >
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    Multiple failed login attempts detected. Please verify your credentials carefully.
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <form onSubmit={onSubmit} className="space-y-4">
-            <motion.div variants={itemVariants}>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                className={`w-full px-4 py-2 rounded-lg border ${
-                  errors.email ? 'border-red-500' : 'border-gray-200'
-                } focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-white/80 backdrop-blur-sm text-base shadow-sm`}
-                placeholder="Enter your email"
-              />
-              {errors.email && (
-                <p id="email-error" className="mt-1 text-sm text-red-500">
-                  {errors.email}
-                </p>
-              )}
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative group">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  aria-invalid={!!errors.password}
-                  aria-describedby={errors.password ? "password-error" : undefined}
-                  className={`w-full px-4 py-2 rounded-lg border ${
-                    errors.password ? 'border-red-500' : 'border-gray-200'
-                  } focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-white/80 backdrop-blur-sm text-base shadow-sm`}
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+          <CardContent>
+            <AnimatePresence>
+              {attempts >= 3 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="mb-4"
                 >
-                  {showPassword ? (
-                    <EyeOffIcon size={20} strokeWidth={1.5} />
-                  ) : (
-                    <Eye size={20} strokeWidth={1.5} />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p id="password-error" className="mt-1 text-sm text-red-500">
-                  {errors.password}
-                </p>
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      Multiple failed login attempts detected. Please verify your credentials carefully.
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
               )}
-            </motion.div>
+            </AnimatePresence>
 
-            <motion.div variants={itemVariants} className="pt-4">
-              <motion.button
-                whileHover={{ scale: 1.02, boxShadow: "0 15px 20px -8px rgb(0 0 0 / 0.15)" }}
-                whileTap={{ scale: 0.98 }}
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter your email"
+                  className={cn(
+                    errors.email && "border-destructive focus-visible:ring-destructive"
+                  )}
+                />
+                {errors.email && (
+                  <p className="text-sm font-medium text-destructive">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter your password"
+                    className={cn(
+                      errors.password && "border-destructive focus-visible:ring-destructive"
+                    )}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+                {errors.password && (
+                  <p className="text-sm font-medium text-destructive">{errors.password}</p>
+                )}
+              </div>
+
+              <Button
                 type="submit"
+                className="w-full"
                 disabled={loading || attempts >= 5}
-                className="w-full bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 text-white py-2.5 rounded-lg hover:opacity-95 transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-md text-base relative overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                 {loading ? (
-                  <span className="flex items-center justify-center">
-                    <Loader2 size={20} strokeWidth={1.5} className="animate-spin mr-2" />
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Signing in...
-                  </span>
+                  </>
                 ) : attempts >= 7 ? (
                   "Too many attempts"
                 ) : (
                   "Sign In"
                 )}
-              </motion.button>
+              </Button>
 
-              <motion.div className="flex justify-between items-center mt-4">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
-                >
-                  Forgot Password?
-                </Link>
+              <div className="flex justify-between items-center">
+                <Button variant="link" asChild className="h-auto p-0">
+                  <Link href="/reset-password" className="text-primary">
+                    Forgot Password?
+                  </Link>
+                </Button>
 
-               
-                <Link
-                  href="/signup"
-                  className="text-blue-600 hover:text-blue-700 font-medium relative inline-block after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 after:origin-right after:scale-x-0 hover:after:scale-x-100 after:transition-transform duration-300"
-                >
-                   <p className="text-sm text-gray-600">Don't have an account?</p>
-                  Sign Up Now
-                </Link>
-              </motion.div>
-            </motion.div>
-          </form>
-        </motion.div>
+                <div className="text-right space-y-1">
+                  <p className="text-sm text-muted-foreground">Don't have an account?</p>
+                  <Button variant="link" asChild className="h-auto p-0">
+                    <Link href="/signup" className="text-primary">
+                      Sign Up Now
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
   );
