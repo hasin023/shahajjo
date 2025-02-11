@@ -39,6 +39,10 @@ export interface ICrimeReport {
     crimeTime: Date,
     updatedAt: Date,
     createdAt: Date
+    author?: {
+        name: string;
+        avatar: string;
+    }
 }
 
 export interface IComment {
