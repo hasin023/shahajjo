@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
     try {
         const loggedInUser = await getAuth(request);
         if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!loggedInUser.isVerified) return NextResponse.json({ error: 'You need to be verified to post' }, { status: 403 });
 
         const formData = await request.formData();
         const reportedBy = loggedInUser.id;
@@ -26,12 +27,12 @@ export async function POST(request: NextRequest) {
 
         if (!title || !description || !location_name || !location_name)
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    
-        let imageUrls:string[] = [];
-        if(images.length !== 0 && images[0].size) imageUrls = await uploadAllImagesParallel(images);
-        let videoUrls:string[] = [];
-        if(videos.length !== 0 && videos[0].size) videoUrls = await uploadAllImagesParallel(videos);
-        
+
+        let imageUrls: string[] = [];
+        if (images.length !== 0 && images[0].size) imageUrls = await uploadAllImagesParallel(images);
+        let videoUrls: string[] = [];
+        if (videos.length !== 0 && videos[0].size) videoUrls = await uploadAllImagesParallel(videos);
+
         await dbConnect();
         const report = await CrimeReport.create({
             reportedBy,

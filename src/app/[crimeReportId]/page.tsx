@@ -12,7 +12,7 @@ import { Sidebar } from "@/components/Sidebar"
 const fetchReportDetails = async (id: string): Promise<ICrimeReport> => {
     // Simulating an API call
     await new Promise((resolve) => setTimeout(resolve, 500))
-    const report = crimeReports.find((r) => r.id === id)
+    const report = crimeReports.find((r) => r._id === id)
     if (!report) throw new Error("Report not found")
     return report
 }

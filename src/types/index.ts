@@ -33,6 +33,7 @@ export interface ICrimeReport {
     downvotes: number
     comments: string[],
     verified: boolean,
+    verificationScore?: number,
     status: 'verified' | 'investigating' | 'resolved' | 'not verified',
     crimeTime: Date,
     updatedAt: Date,
