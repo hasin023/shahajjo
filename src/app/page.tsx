@@ -28,7 +28,6 @@ export default function Home() {
   const [selectedSort, setSelectedSort] = useState("Most Recent")
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<"full" | "compact">("full")
-  const [userVotes, setUserVotes] = useState<Record<string, "upvote" | "downvote" | null>>({})
   const [crimeReports, setCrimeReports] = useState<ICrimeReport[]>([])
   const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
@@ -50,13 +49,6 @@ export default function Home() {
     }
   }
 
-  const handleVote = (reportId: string, direction: "upvote" | "downvote") => {
-    setUserVotes((prev) => ({
-      ...prev,
-      [reportId]: prev[reportId] === direction ? null : direction,
-    }))
-    // TODO: Implement API call to update vote on the server
-  }
 
   const handlePageChange = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected)
@@ -139,8 +131,6 @@ export default function Home() {
               <CrimeCardComponent
                 key={report._id}
                 report={report}
-                onVote={handleVote}
-                userVote={userVotes[report._id] as "upvote" | "downvote" | null}
               />
             ))}
             {crimeReports.length === 0 && (

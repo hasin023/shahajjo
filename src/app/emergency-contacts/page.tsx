@@ -68,10 +68,6 @@ export default function EmergencyContacts() {
       <main className="flex-1 p-4">
         <h1 className="text-3xl font-bold text-blue-200">Emergency Contacts</h1>
         <div className="py-4">
-          <p>
-            Find the nearest emergency contacts around you. Select the type of
-            emergency contact you are looking for and enter your address.
-          </p>
         </div>
         <div className="py-4 flex gap-4 justify-between">
           <MapProvider>
@@ -90,6 +86,9 @@ export default function EmergencyContacts() {
           </select>
         </div>
         <div className="p-4">
+            {address?.location && <p>Showing emergency contacts near latitude: {address?.location.lat}, longitude: {address?.location.lng}</p>}
+        </div>
+        <div className="p-4">
           {Loading ? (
             <p>Loading...</p>
           ) : contacts.length === 0 ? (
@@ -105,8 +104,8 @@ export default function EmergencyContacts() {
                     <h2 className="text-lg font-semibold text-blue-200">
                       {contact.name}
                     </h2>
-                    <p className="font-bold text-sm">
-                      {contact.contact_number}
+                    <p className="font-bold text-sm py-1">
+                      <a href={`tel:${contact.contact_number}`}>{contact.contact_number}</a>
                     </p>
                     <p className="text-xs py-1">
                       Service:{" "}

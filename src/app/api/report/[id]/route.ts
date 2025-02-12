@@ -1,6 +1,7 @@
 import { dbConnect } from "@/db/mongodb/connect"
 import Comment from "@/db/mongodb/models/Comment"
 import CrimeReport from "@/db/mongodb/models/CrimeReport"
+import User from "@/db/mongodb/models/User";
 import { getAuth } from "@/libs/auth";
 import { NextResponse, type NextRequest } from "next/server"
 
@@ -13,6 +14,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ error: "Report not found" }, { status: 404 })
         }
 
+        const author = await User.findById(report.reportedBy).select("name email avatar");
+
         const comments = await Comment.find({ crimeReportId: id }).sort({ createdAt: -1 })
 
         let isAuthor = false;
@@ -24,9 +27,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         } catch (authError) {
             console.error("Error checking user auth: ", authError)
         }
-
+        console.log(report, author)
         return NextResponse.json({
-            report,
+            report: { ...report.toJSON(), author },
             comments,
             isAuthor
         })
