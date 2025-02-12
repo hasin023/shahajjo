@@ -82,3 +82,10 @@ export interface IEmergencyContact {
     status: 'updated' | 'outdated',
     createdAt: Date,
 }
+
+export interface IApproveAnonymousReport {
+    crimeReportId: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

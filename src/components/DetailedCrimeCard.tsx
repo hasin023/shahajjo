@@ -20,6 +20,7 @@ import {
     ZoomOutIcon,
     Edit,
     Trash,
+    User,
 } from "lucide-react"
 import { formatDistanceToNow, format } from "date-fns"
 import type { ICrimeReport } from "@/types"
@@ -27,6 +28,7 @@ import Lightbox from "yet-another-react-lightbox"
 import "yet-another-react-lightbox/styles.css"
 import Zoom from "yet-another-react-lightbox/plugins/zoom"
 import ReactPlayer from "react-player"
+import toast from "react-hot-toast"
 
 const statusIcons = {
     verified: Shield,
@@ -55,13 +57,39 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
     const StatusIcon = statusIcons[report.status as keyof typeof statusIcons]
     const [lightboxOpen, setLightboxOpen] = useState(false)
     const [lightboxIndex, setLightboxIndex] = useState(0)
+    const [isRequestingPublic, setIsRequestingPublic] = useState(false)
 
     const images = report.images || []
     const videos = report.videos || []
-    console.log(report);
+
     const openLightbox = (index: number) => {
         setLightboxIndex(index)
         setLightboxOpen(true)
+    }
+
+    const handleMakePublicRequest = async () => {
+        setIsRequestingPublic(true)
+        try {
+            const response = await fetch(`/api/user/report/anonymous-request`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ crimeReportId: report._id }),
+            })
+
+            if (response.ok) {
+                toast.success("Request to make report public has been sent to admins.")
+            } else {
+                const data = await response.json()
+                toast.error(data.error || "Failed to send request. Please try again.")
+            }
+        } catch (error) {
+            console.error("Error requesting to make report public:", error)
+            toast.error("An error occurred. Please try again.")
+        } finally {
+            setIsRequestingPublic(false)
+        }
     }
 
     return (
@@ -98,6 +126,16 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                                         <Edit className="w-4 h-4 mr-2" />
                                         Edit
                                     </DropdownMenuItem>
+                                    {report.isAnonymous && (
+                                        <DropdownMenuItem
+                                            onClick={handleMakePublicRequest}
+                                            className="cursor-pointer flex items-center"
+                                            disabled={isRequestingPublic}
+                                        >
+                                            <User className="w-4 h-4 mr-2" />
+                                            {isRequestingPublic ? "Requesting..." : "Make Public"}
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={onDelete} className="cursor-pointer text-red-500 flex items-center">
                                         <Trash className="w-4 h-4 mr-2" />
                                         Delete
