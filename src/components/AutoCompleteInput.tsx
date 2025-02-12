@@ -13,7 +13,7 @@ interface AutoCompleteInputProps {
 }
 
 export default function AutoCompleteInput({
-  setAddress, as, value, placeholder, className
+  address, setAddress, as, value, placeholder, className
 }: AutoCompleteInputProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -52,7 +52,7 @@ export default function AutoCompleteInput({
       ref={inputRef}
       type="text"
       className={className ? className : `text-ellipsis bg-transparent outline-none border-none block`}
-      defaultValue={value}
+      defaultValue={value || address?.name}
       placeholder={placeholder}
       required
     />
@@ -64,6 +64,7 @@ export default function AutoCompleteInput({
       <Input
         ref={inputRef}
         type="text"
+        defaultValue={value || address?.name}
         className="w-full"
         placeholder="Search and Select a Location"
         required

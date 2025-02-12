@@ -35,10 +35,11 @@ const UserProfile = () => {
 
     // Dummy data for statistics
     const reportsCount = 12
-    const upvotes = 45
+    const upvotes = 5
     const downvotes = 3
     const verificationScore = 0.89 // This is 89%
 
+    
     // Fetch the user data and their reports when the component mounts
     useEffect(() => {
         const fetchUserData = async () => {

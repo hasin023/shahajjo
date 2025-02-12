@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -54,6 +54,18 @@ export default function Profile() {
     const [avatarUrl, setAvatarUrl] = useState<string>("/placeholder.svg")
     const [userReports, setUserReports] = useState<UserReport[]>([])
     const router = useRouter()
+    const [upvoteCount, setUpvoteCount] = useState(0);
+    const [downvoteCount, setDownvoteCount] = useState(0);
+
+    useEffect(() => {
+        fetch("/api/user/report/vote")
+        .then((res) => res.json())
+        .then((data) => {
+            console.log(data);
+            setUpvoteCount(data.upvoteCount);
+            setDownvoteCount(data.downvoteCount);
+        });
+    },[])
 
     useEffect(() => {
         async function generateAvatar() {
@@ -159,11 +171,11 @@ export default function Profile() {
                                     <p className="text-muted-foreground">Reports</p>
                                 </div>
                                 <div className="bg-primary/10 p-4 rounded-lg">
-                                    <p className="text-2xl font-bold">{dummyUser.upvotes}</p>
+                                    <p className="text-2xl font-bold">{upvoteCount}</p>
                                     <p className="text-muted-foreground">Upvotes</p>
                                 </div>
                                 <div className="bg-primary/10 p-4 rounded-lg">
-                                    <p className="text-2xl font-bold">{dummyUser.downvotes}</p>
+                                    <p className="text-2xl font-bold">{downvoteCount}</p>
                                     <p className="text-muted-foreground">Downvotes</p>
                                 </div>
                                 <div className="bg-primary/10 p-4 rounded-lg">
