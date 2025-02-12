@@ -82,3 +82,9 @@ export interface IEmergencyContact {
     status: 'updated' | 'outdated',
     createdAt: Date,
 }
+
+export interface INotificationSubscription {
+    userId: String,
+    subscription: Object,
+    createdAt: Date,   
+}
