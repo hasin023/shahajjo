@@ -37,6 +37,7 @@ export interface ICrimeReport {
     verificationScore?: number,
     status: 'verified' | 'investigating' | 'resolved' | 'not verified',
     crimeTime: Date,
+    isAnonymous?: boolean,
     updatedAt: Date,
     createdAt: Date
     author?: {

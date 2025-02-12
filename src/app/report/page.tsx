@@ -15,6 +15,7 @@ import toast from "react-hot-toast"
 import { Sidebar } from "@/components/Sidebar"
 import { generateImageCaption } from "@/libs/hf-handlers"
 import { useRouter } from "next/navigation"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export default function ReportCrime() {
   const router = useRouter()
@@ -26,6 +27,7 @@ export default function ReportCrime() {
   const [address, setAddress] = useState<Address | null>(null)
   const [video, setVideo] = useState<File | null>(null)
   const [videoDescription, setVideoDescription] = useState("")
+  const [isAnonymous, setIsAnonymous] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,6 +40,7 @@ export default function ReportCrime() {
       formData.append("lat", address?.location.lat.toString() || "")
       formData.append("lng", address?.location.lng.toString() || "")
       formData.append("videoDescription", videoDescription)
+      formData.append("isAnonymous", isAnonymous.toString())
 
       const res = await fetch("/api/user/report", {
         method: "POST",
@@ -57,20 +60,35 @@ export default function ReportCrime() {
     }
   }
 
-  const generateDescription = async () => {
-    if (!image) return
+  const templates = [
+    "A crime is taking place: {text}. Immediate attention is required.",
+    "Ongoing incident captured: {text}. Authorities should be alerted.",
+    "Real-time crime report: {text}. This situation demands urgent action.",
+    "This image documents {text}, highlighting the severity of the crime.",
+    "Crime in progress: {text}. Witnesses should report any additional details.",
+    "Emergency alert: {text} is happening right now. Law enforcement must intervene.",
+    "Breaking news: {text}. Officials need to respond swiftly to this situation.",
+    "Incident unfolding: {text}. Security footage may provide further insights.",
+    "Public safety alert: {text}. People in the vicinity should stay cautious.",
+    "Disturbance reported: {text}. Authorities must be informed immediately."
+  ];
 
-    setIsGeneratingDescription(true)
-    const response = await generateImageCaption(image)
+  const generateDescription = async () => {
+    if (!image) return;
+
+    setIsGeneratingDescription(true);
+    const response = await generateImageCaption(image);
 
     if (response && response.generated_text) {
-      setDescription(response.generated_text as string)
+      const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+      const templatedDescription = randomTemplate.replace("{text}", response.generated_text);
+      setDescription(templatedDescription);
     } else {
-      toast.error("Failed to generate description. Please try again.")
+      toast.error("Failed to generate description. Please try again.");
     }
 
-    setIsGeneratingDescription(false)
-  }
+    setIsGeneratingDescription(false);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -136,6 +154,14 @@ export default function ReportCrime() {
                       <Label htmlFor="crimeTime">Crime Time</Label>
                       <Input id="crimeTime" name="crimeTime" type="datetime-local" required />
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="isAnonymous"
+                        checked={isAnonymous}
+                        onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
+                      />
+                      <Label htmlFor="isAnonymous">Submit anonymously</Label>
+                    </div>
                   </div>
                   <div className="space-y-4">
                     <div>
@@ -148,6 +174,7 @@ export default function ReportCrime() {
                         accept="image/*"
                         onChange={handleImageChange}
                         ref={fileInputRef}
+                        required
                       />
                     </div>
                     {imagePreview && (
