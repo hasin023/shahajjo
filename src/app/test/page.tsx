@@ -77,7 +77,7 @@ export default function TestAIPage() {
                                 <div className="mt-2">
                                     {/* Title Analysis */}
                                     {report.titleAnalysis && (
-                                        <div className="mt-2 bg-gray-100 p-3 rounded">
+                                        <div className="mt-2 p-3 rounded">
                                             <p><strong>Title Fake Probability:</strong> {report.titleAnalysis[0]?.score}</p>
                                             <p><strong>Title Label:</strong> {report.titleAnalysis[0]?.label}</p>
                                         </div>
@@ -85,7 +85,7 @@ export default function TestAIPage() {
 
                                     {/* Description Analysis */}
                                     {report.descriptionAnalysis && (
-                                        <div className="mt-2 bg-gray-100 p-3 rounded">
+                                        <div className="mt-2 p-3 rounded">
                                             <p><strong>Description Fake Probability:</strong> {report.descriptionAnalysis[0]?.score}</p>
                                             <p><strong>Description Label:</strong> {report.descriptionAnalysis[0]?.label}</p>
                                         </div>
@@ -93,7 +93,7 @@ export default function TestAIPage() {
 
                                     {/* Image Analysis */}
                                     {report.images && report.images.length > 0 && report.imageAnalysis && (
-                                        <div className="mt-2 bg-gray-100 p-3 rounded">
+                                        <div className="mt-2 p-3 rounded">
                                             <p><strong>Fake Image Score:</strong> {report.imageAnalysis[0]?.score}</p>
                                             <p><strong>Image Label:</strong> {report.imageAnalysis[0]?.label}</p>
                                         </div>

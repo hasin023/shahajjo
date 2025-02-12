@@ -1,8 +1,11 @@
 import { dbConnect } from '@/db/mongodb/connect';
 import Comment from '@/db/mongodb/models/Comment';
+import NotificationSubscription from '@/db/mongodb/models/NotificationSubscription';
 import { getAuth } from '@/libs/auth';
+import webpush from '@/libs/webpush';
 import { Content } from 'next/font/google';
 import { NextResponse, NextRequest } from 'next/server';
+import { PushSubscription } from 'web-push';
 
 export async function POST(request: NextRequest) {
     try {
@@ -19,6 +22,15 @@ export async function POST(request: NextRequest) {
             content,
             replyOf: replyOf || null,
         });
+        const authorSubscription = await NotificationSubscription.findOne({ userId: comment.author });
+        if (authorSubscription)
+        await webpush.sendNotification(
+            authorSubscription.subscription as PushSubscription,
+            JSON.stringify({
+              title: "Someone Commented on your report!",
+              body: comment.content,
+            })
+          );
         return NextResponse.json({ comment });
     } catch (error) {
         console.error('Error: ', error);

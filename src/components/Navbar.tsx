@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { AlertCircle, BarChart2, FileText, Home, Map, User, LogOutIcon } from "lucide-react"
 import { NotificationDropdown } from "./NotificationDropdown"
 import { useUserLoaded, useUser } from "@/hooks/user"
+import PushSubscription from "./PushSubscription"
 
 const Navbar = () => {
     const pathname = usePathname()
@@ -54,6 +55,7 @@ const Navbar = () => {
                         ))}
                     </div>
                     <div className="flex items-center space-x-4">
+                        <PushSubscription/>
                         <NotificationDropdown />
                         <ModeToggle />
                         {
