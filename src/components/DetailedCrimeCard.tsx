@@ -231,10 +231,10 @@ export function DetailedCrimeCard({
                   
                 <Badge
                     variant="secondary"
-                    className={`gap-1 ${report.suspicionLevel >= 70 ? "text-red-400" : report.suspicionLevel >= 40 ? "text-yellow-400" : "text-green-400"}`}
+                    className={`gap-1 ${report.suspicionLevel >= 75 ? "text-green-400" : report.suspicionLevel >= 40 ? "text-yellow-400" : "text-red-400"}`}
                     >
                     <ShieldAlert className="h-3 w-3" />
-                    Suspicious:{report.suspicionLevel >= 70 ? "High" : report.suspicionLevel >= 40 ? "Medium" : "Low"}
+                    Suspicious:{report.suspicionLevel >= 75 ? "Low" : report.suspicionLevel >= 40 ? "Medium" : "High"}
                 </Badge>
         <div className="flex items-center space-x-2 text-muted-foreground">
             <MapPin className="w-4 h-4" />
