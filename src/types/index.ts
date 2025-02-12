@@ -35,7 +35,7 @@ export interface ICrimeReport {
     comments: string[],
     verified: boolean,
     verificationScore?: number,
-    status: 'verified' | 'investigating' | 'resolved' | 'not verified',
+    status: 'verified' | 'investigating' | 'resolved' | 'not verified' | 'fake',
     crimeTime: Date,
     isAnonymous?: boolean,
     updatedAt: Date,
@@ -68,4 +68,17 @@ export interface IVote {
 export type Address = {
     name?: string;
     location: { lat: number, lng: number };
+}
+
+export interface IEmergencyContact {
+    name: string,
+    address: string,
+    contact_number: string,
+    location: {
+        type: string,
+        coordinates: number[],
+    },
+    type: string,
+    status: 'updated' | 'outdated',
+    createdAt: Date,
 }

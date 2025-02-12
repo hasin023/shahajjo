@@ -7,7 +7,6 @@ const ftpIp = process.env.FTP_IP;
 const ftpUser = process.env.FTP_USER;
 const ftpPassword = process.env.FTP_PASS;
 
-
 function extractFileName(url: string): string {
     try {
         const parsedUrl = new URL(url);

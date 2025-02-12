@@ -158,7 +158,7 @@ export default function ReportCrime() {
                       <Checkbox
                         id="isAnonymous"
                         checked={isAnonymous}
-                        onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
+                        onCheckedChange={(checked:any) => setIsAnonymous(checked as boolean)}
                       />
                       <Label htmlFor="isAnonymous">Submit anonymously</Label>
                     </div>
