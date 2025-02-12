@@ -6,6 +6,7 @@ import type React from "react"
 import { ThemeProvider } from "next-themes"
 import { Toaster } from "react-hot-toast";
 import LoadUser from "@/components/LoadUser";
+import Image from "next/image"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,9 +27,10 @@ export default function RootLayout({
           <LoadUser />
           <div className="min-h-screen flex flex-col">
             <header className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#4359ff] via-[#504d8e] to-[#1e8b4a] z-0" />
-              <div className="relative z-10 mx-auto px-4 py-2">
-                <h1 className="text-3xl font-bold text-white">সাহায্য</h1>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#a9b2f7] via-[#504d8e] to-[#1e8b4a] z-0" />
+              <div className="flex items-center justify-start relative z-10 mx-auto px-4 py-2 gap-2">
+                <Image src="/logo.png" className="h-12 w-12" alt="Shahajjo Logo" height={120} width={120} priority />
+                <h3 className="text-4xl text-gray-50 font-semibold">সাহায্য</h3>
               </div>
               <Navbar />
             </header>
