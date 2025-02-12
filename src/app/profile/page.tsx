@@ -179,7 +179,11 @@ export default function Profile() {
                                     <p className="text-muted-foreground">Downvotes</p>
                                 </div>
                                 <div className="bg-primary/10 p-4 rounded-lg">
-                                    <p className="text-2xl font-bold">{(dummyUser.verificationScore * 100).toFixed(0)}%</p>
+                                    <p className="text-2xl font-bold">{calculateVerificationScore({
+                                        isUserVerified: user.isVerified,
+                                        upvotes: upvoteCount,
+                                        downvotes: downvoteCount,
+                                    }).toFixed(0)}%</p>
                                     <p className="text-muted-foreground">Verification Score</p>
                                 </div>
                             </div>
@@ -284,3 +288,42 @@ export default function Profile() {
     )
 }
 
+
+
+interface ReportMetrics {
+    isUserVerified: boolean;
+    upvotes: number;
+    downvotes: number;
+  }
+  
+  function calculateVerificationScore(metrics: ReportMetrics): number {
+    // Base weights for different components
+    const weights = {
+      userVerification: 0.4, // 40% weight for user verification
+      voteDifference: 0.6    // 60% weight for community votes
+    };
+  
+    // Calculate user verification component (40 points if verified)
+    const verificationScore = metrics.isUserVerified ? 100 : 0;
+  
+    // Calculate vote difference component
+    const totalVotes = metrics.upvotes + metrics.downvotes;
+    let voteScore = 0;
+  
+    if (totalVotes > 0) {
+      // Calculate vote ratio and convert to percentage
+      const voteDifference = metrics.upvotes - metrics.downvotes;
+      const maxPossibleDifference = totalVotes;
+      voteScore = ((voteDifference + maxPossibleDifference) / (2 * maxPossibleDifference)) * 100;
+    }
+  
+    // Calculate final weighted score
+    const finalScore = (
+      verificationScore * weights.userVerification +
+      voteScore * weights.voteDifference
+    );
+  
+    // Round to 2 decimal places and ensure score is between 0-100
+    return Math.min(100, Math.max(0, Number(finalScore.toFixed(2))));
+  }
+  
