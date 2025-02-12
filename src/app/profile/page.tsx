@@ -56,6 +56,16 @@ export default function Profile() {
     const router = useRouter()
     const [upvoteCount, setUpvoteCount] = useState(0);
     const [downvoteCount, setDownvoteCount] = useState(0);
+    const [verificationScore, setVerificationScore] = useState(0);
+
+    useEffect(() => {
+        fetch("/api/user/report/verify")
+        .then((res) => res.json())
+        .then((data) => {
+            console.log(data);
+            setVerificationScore(data.metrics.averageVerificationScore);
+        });
+    }, [])
 
     useEffect(() => {
         fetch("/api/user/report/vote")
@@ -179,11 +189,7 @@ export default function Profile() {
                                     <p className="text-muted-foreground">Downvotes</p>
                                 </div>
                                 <div className="bg-primary/10 p-4 rounded-lg">
-                                    <p className="text-2xl font-bold">{calculateVerificationScore({
-                                        isUserVerified: user.isVerified,
-                                        upvotes: upvoteCount,
-                                        downvotes: downvoteCount,
-                                    }).toFixed(0)}%</p>
+                                    <p className="text-2xl font-bold">{verificationScore}%</p>
                                     <p className="text-muted-foreground">Verification Score</p>
                                 </div>
                             </div>
