@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
         const images = formData.getAll('images') as File[];
         const videos = formData.getAll('videos') as File[];
         const videoDescription = formData.get('videoDescription') as string;
+        const isAnonymous = formData.get("isAnonymous") === "true"
 
         if (!title || !description || !location_name || !location_name)
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
             },
             images: imageUrls,
             videos: videoUrls,
+            isAnonymous,
         });
         await report.save();
         return NextResponse.json({ message: 'Report created successfully' });
