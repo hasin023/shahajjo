@@ -64,16 +64,17 @@ export function CompactCrimeCard({ report }: CompactCrimeCardProps) {
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Badge
                 variant="secondary"
-                className={`${
-                  statusColors[report.status as keyof typeof statusColors]
-                }`}
+                className={`${statusColors[report.status as keyof typeof statusColors]
+                  }`}
               >
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {report.status}
               </Badge>
-              <span>Reported by {report.author?.name}</span>
-              <span>•</span>
-              <span>{formatDistanceToNow(new Date(report.createdAt))} ago</span>
+              Reported by •
+              <span className="font-semibold">
+                {report.isAnonymous ? "Anonymous" : report.author?.name}
+              </span>
+              • {formatDistanceToNow(new Date(report.createdAt))} ago
             </div>
             <h3 className="font-medium mt-1 truncate">{report.title}</h3>
             <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
