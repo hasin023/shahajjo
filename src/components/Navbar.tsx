@@ -38,7 +38,7 @@ const Navbar = () => {
                 <div className="flex h-14 items-center justify-between">
                     <div className="flex items-center space-x-2">
                         {navItems.map((item) => (
-                            item.role && user?.role !== item.role ? null : (
+                            !item.role || (user?.role == 'admin' || user?.role == item.role) ? (
                                 <Link
                                     key={item.href}
                                     href={item.href}
@@ -50,7 +50,7 @@ const Navbar = () => {
                                     <item.icon className="h-4 w-4 mr-2" />
                                     <span className="hidden sm:inline">{item.label}</span>
                                 </Link>
-                            )
+                            ) : null
                         ))}
                     </div>
                     <div className="flex items-center space-x-4">
