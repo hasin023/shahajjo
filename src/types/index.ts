@@ -68,3 +68,16 @@ export type Address = {
     name?: string;
     location: { lat: number, lng: number };
 }
+
+export interface IEmergencyContact {
+    name: string,
+    address: string,
+    contact_number: string,
+    location: {
+        type: string,
+        coordinates: number[],
+    },
+    type: string,
+    status: 'updated' | 'outdated',
+    createdAt: Date,
+}
