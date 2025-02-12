@@ -48,12 +48,13 @@ interface DetailedCrimeCardProps {
     report: ICrimeReport
     onVote: (reportId: string, direction: "upvote" | "downvote") => void
     userVote: "upvote" | "downvote" | null
+    voteCount: number
     isAuthor: boolean
     onEdit: () => void
     onDelete: () => void
 }
 
-export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, onDelete }: DetailedCrimeCardProps) {
+export function DetailedCrimeCard({ report, onVote, userVote, voteCount, isAuthor, onEdit, onDelete }: DetailedCrimeCardProps) {
     const StatusIcon = statusIcons[report.status as keyof typeof statusIcons]
     const [lightboxOpen, setLightboxOpen] = useState(false)
     const [lightboxIndex, setLightboxIndex] = useState(0)
@@ -207,14 +208,13 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                         className={`flex items-center space-x-1 ${userVote === "upvote" ? "text-green-500" : "text-muted-foreground"}`}
                     >
                         <ArrowBigUp className="w-5 h-5" />
-                        <span>{report.upvotes}</span>
                     </button>
+                    <span>{voteCount}</span>
                     <button
                         onClick={() => onVote(report._id, "downvote")}
                         className={`flex items-center space-x-1 ${userVote === "downvote" ? "text-red-500" : "text-muted-foreground"}`}
                     >
                         <ArrowBigDown className="w-5 h-5" />
-                        <span>{report.downvotes}</span>
                     </button>
                 </div>
             </CardContent>

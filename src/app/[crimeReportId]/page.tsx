@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 export default function ReportDetailsPage() {
   const { crimeReportId } = useParams();
   const [report, setReport] = useState<ICrimeReport | null>(null);
+    const [voteCount, setVoteCount] = useState(0);
   const [userVote, setUserVote] = useState<"upvote" | "downvote" | null>(null);
   const [comments, setComments] = useState<CommentWithAuthorProps[]>([]);
   const [isAuthor, setIsAuthor] = useState(false);
@@ -30,6 +31,7 @@ export default function ReportDetailsPage() {
         if (!response.ok) throw new Error("Failed to fetch report");
         const data = await response.json();
         setReport(data.report);
+        setVoteCount(data.report.upvotes - data.report.downvotes);
         setComments(data.comments || []);
         setIsAuthor(data.isAuthor);
       } catch (error) {
@@ -43,18 +45,24 @@ export default function ReportDetailsPage() {
 
   const handleVote = async (
     reportId: string,
-    direction: "upvote" | "downvote"
+    vote: "upvote" | "downvote"
   ) => {
     try {
-      const response = await fetch(`/api/report/${reportId}/vote`, {
+      const response = await fetch(`/api/user/report/vote/${reportId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ direction }),
+        body: JSON.stringify({ vote }),
       });
       if (!response.ok) throw new Error("Failed to submit vote");
-      const updatedReport = await response.json();
-      setReport(updatedReport);
-      // setUserVote(direction)
+      const data = await response.json();
+      setUserVote(data.vote.vote);
+          if (vote == "upvote" && data.message == 'ADDED') setVoteCount(v => v+1)
+          if (vote == "downvote" && data.message == 'ADDED') setVoteCount(v => v -1)
+          if (vote == "upvote" && data.message == 'REMOVED') setVoteCount(v => v-1)
+          if (vote == "downvote" && data.message == 'REMOVED') setVoteCount(v => v +1)
+          if(vote == "upvote" && data.message == 'UPDATED') setVoteCount(v => v+2)
+          if(vote == "downvote" && data.message == 'UPDATED') setVoteCount(v => v-2)
+          console.log(data);
     } catch (error) {
       console.error("Failed to submit vote:", error);
       toast({
@@ -123,6 +131,7 @@ export default function ReportDetailsPage() {
         <DetailedCrimeCard
           report={report}
           onVote={handleVote}
+          voteCount={voteCount}
           userVote={userVote}
           isAuthor={isAuthor}
           onEdit={handleEdit}
