@@ -35,7 +35,7 @@ export function CommentsSection({ comments, onCommentSubmit }: CommentsSectionPr
                 </form>
                 <div className="space-y-4">
                     {comments.map((comment) => (
-                        <div key={comment._id} className="flex space-x-4 rounded border p-1">
+                        <div key={comment._id} className="flex space-x-4 rounded border p-1 bg-white bg-opacity-10">
                             <Avatar>
                                 <AvatarImage src={`https://avatar.vercel.sh/${comment.author}`} />
                                 <AvatarFallback>{comment.author[0]}</AvatarFallback>

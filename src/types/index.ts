@@ -82,3 +82,20 @@ export interface IEmergencyContact {
     status: 'updated' | 'outdated',
     createdAt: Date,
 }
+
+export interface INotificationSubscription {
+    userId: String,
+    subscription: Object,
+    createdAt: Date,   
+}
+
+export interface CommentWithAuthorProps extends IComment {
+    authorName: string
+}
+
+export interface IApproveAnonymousReport {
+    crimeReportId: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
