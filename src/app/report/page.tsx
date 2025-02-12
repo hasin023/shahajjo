@@ -1,64 +1,83 @@
-"use client"
+// page.tsx
+"use client";
 
-import type React from "react"
-import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader2, X } from "lucide-react"
-import { MapProvider } from "@/components/MapProvider"
-import AutoCompleteInput from "@/components/AutoCompleteInput"
-import type { Address } from "@/types"
-import toast from "react-hot-toast"
-import { Sidebar } from "@/components/Sidebar"
-import { generateImageCaption } from "@/libs/hf-handlers"
-import { useRouter } from "next/navigation"
-import { Checkbox } from "@/components/ui/checkbox"
+import type React from "react";
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Loader2, X } from "lucide-react";
+import { MapProvider } from "@/components/MapProvider";
+import AutoCompleteInput from "@/components/AutoCompleteInput";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Address } from "@/types";
+import toast from "react-hot-toast";
+import { Sidebar } from "@/components/Sidebar";
+import { generateImageCaption } from "@/libs/hf-handlers";
+import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
+
+type CompressionLevel = "low" | "medium" | "high";
 
 export default function ReportCrime() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [image, setImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [description, setDescription] = useState("")
-  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
-  const [address, setAddress] = useState<Address | null>(null)
-  const [video, setVideo] = useState<File | null>(null)
-  const [videoDescription, setVideoDescription] = useState("")
-  const [isAnonymous, setIsAnonymous] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [description, setDescription] = useState("");
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [address, setAddress] = useState<Address | null>(null);
+  const [video, setVideo] = useState<File | null>(null);
+  const [videoDescription, setVideoDescription] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [compressionLevel, setCompressionLevel] =
+    useState<CompressionLevel>("medium");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setIsLoading(true)
-      const formData = new FormData(e.target as HTMLFormElement)
-      formData.set("description", description)
-      formData.append("location_name", address?.name || "")
-      formData.append("lat", address?.location.lat.toString() || "")
-      formData.append("lng", address?.location.lng.toString() || "")
-      formData.append("videoDescription", videoDescription)
-      formData.append("isAnonymous", isAnonymous.toString())
+      setIsLoading(true);
+      const formData = new FormData(e.target as HTMLFormElement);
+      formData.set("description", description);
+      formData.append("location_name", address?.name || "");
+      formData.append("lat", address?.location.lat.toString() || "");
+      formData.append("lng", address?.location.lng.toString() || "");
+      formData.append("videoDescription", videoDescription);
+      formData.append("isAnonymous", isAnonymous.toString());
+      formData.append("compressionLevel", compressionLevel);
 
       const res = await fetch("/api/user/report", {
         method: "POST",
         body: formData,
-      })
-      const data = await res.json()
-      if (data.error) toast.error(data.error)
+      });
+      const data = await res.json();
+      if (data.error) toast.error(data.error);
       else {
-        toast.success("Report submitted successfully!")
-        router.push("/")
+        toast.success("Report submitted successfully!");
+        router.push("/");
       }
     } catch (error) {
-      console.error(error)
-      toast.error("Failed to submit report. Please try again.")
+      console.error(error);
+      toast.error("Failed to submit report. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const templates = [
     "A crime is taking place: {text}. Immediate attention is required.",
@@ -70,7 +89,7 @@ export default function ReportCrime() {
     "Breaking news: {text}. Officials need to respond swiftly to this situation.",
     "Incident unfolding: {text}. Security footage may provide further insights.",
     "Public safety alert: {text}. People in the vicinity should stay cautious.",
-    "Disturbance reported: {text}. Authorities must be informed immediately."
+    "Disturbance reported: {text}. Authorities must be informed immediately.",
   ];
 
   const generateDescription = async () => {
@@ -80,8 +99,12 @@ export default function ReportCrime() {
     const response = await generateImageCaption(image);
 
     if (response && response.generated_text) {
-      const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
-      const templatedDescription = randomTemplate.replace("{text}", response.generated_text);
+      const randomTemplate =
+        templates[Math.floor(Math.random() * templates.length)];
+      const templatedDescription = randomTemplate.replace(
+        "{text}",
+        response.generated_text
+      );
       setDescription(templatedDescription);
     } else {
       toast.error("Failed to generate description. Please try again.");
@@ -91,31 +114,31 @@ export default function ReportCrime() {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setImage(file)
-      const reader = new FileReader()
+      setImage(file);
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setVideo(file)
+      setVideo(file);
     }
-  }
+  };
 
   const removeImage = () => {
-    setImage(null)
-    setImagePreview(null)
+    setImage(null);
+    setImagePreview(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+      fileInputRef.current.value = "";
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -125,7 +148,9 @@ export default function ReportCrime() {
           <Card>
             <CardHeader>
               <CardTitle>Report a Crime</CardTitle>
-              <CardDescription>Provide details about the incident you witnessed</CardDescription>
+              <CardDescription>
+                Provide details about the incident you witnessed
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -133,7 +158,12 @@ export default function ReportCrime() {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="title">Title</Label>
-                      <Input name="title" id="title" placeholder="Enter crime title" required />
+                      <Input
+                        name="title"
+                        id="title"
+                        placeholder="Enter crime title"
+                        required
+                      />
                     </div>
                     <div>
                       <Label htmlFor="description">Description</Label>
@@ -148,17 +178,27 @@ export default function ReportCrime() {
                       />
                     </div>
                     <MapProvider>
-                      <AutoCompleteInput setAddress={setAddress} address={address} />
+                      <AutoCompleteInput
+                        setAddress={setAddress}
+                        address={address}
+                      />
                     </MapProvider>
                     <div>
                       <Label htmlFor="crimeTime">Crime Time</Label>
-                      <Input id="crimeTime" name="crimeTime" type="datetime-local" required />
+                      <Input
+                        id="crimeTime"
+                        name="crimeTime"
+                        type="datetime-local"
+                        required
+                      />
                     </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="isAnonymous"
                         checked={isAnonymous}
-                        onCheckedChange={(checked:any) => setIsAnonymous(checked as boolean)}
+                        onCheckedChange={(checked: any) =>
+                          setIsAnonymous(checked as boolean)
+                        }
                       />
                       <Label htmlFor="isAnonymous">Submit anonymously</Label>
                     </div>
@@ -177,6 +217,34 @@ export default function ReportCrime() {
                         required
                       />
                     </div>
+                    {image && (
+                      <div>
+                        <Label htmlFor="compression">
+                          Image Compression Level
+                        </Label>
+                        <Select
+                          value={compressionLevel}
+                          onValueChange={(value: CompressionLevel) =>
+                            setCompressionLevel(value)
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select compression level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">
+                              Low (Best Quality)
+                            </SelectItem>
+                            <SelectItem value="medium">
+                              Medium (Balanced)
+                            </SelectItem>
+                            <SelectItem value="high">
+                              High (Smallest Size)
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     {imagePreview && (
                       <div className="relative">
                         <img
@@ -226,7 +294,9 @@ export default function ReportCrime() {
                     </div>
                     {video && (
                       <div>
-                        <Label htmlFor="videoDescription">Video Description</Label>
+                        <Label htmlFor="videoDescription">
+                          Video Description
+                        </Label>
                         <Textarea
                           id="videoDescription"
                           name="videoDescription"
@@ -250,6 +320,5 @@ export default function ReportCrime() {
         </div>
       </main>
     </div>
-  )
+  );
 }
-
