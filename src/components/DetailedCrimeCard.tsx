@@ -71,7 +71,11 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                     <div>
                         <CardTitle className="text-2xl font-bold">{report.title}</CardTitle>
                         <p className="text-muted-foreground mt-1">
-                            Reported by {report.author?.name} • {formatDistanceToNow(new Date(report.createdAt))} ago
+                            Reported by •
+                            <span className="font-semibold">
+                                {report.isAnonymous ? "Anonymous" : report.author?.name}
+                            </span>
+                            • {formatDistanceToNow(new Date(report.createdAt))} ago
                         </p>
                     </div>
                     <div className="flex items-center space-x-2">
