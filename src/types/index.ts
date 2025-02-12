@@ -35,7 +35,7 @@ export interface ICrimeReport {
     comments: string[],
     verified: boolean,
     verificationScore?: number,
-    status: 'verified' | 'investigating' | 'resolved' | 'not verified',
+    status: 'verified' | 'investigating' | 'resolved' | 'not verified' | 'fake',
     crimeTime: Date,
     updatedAt: Date,
     createdAt: Date
