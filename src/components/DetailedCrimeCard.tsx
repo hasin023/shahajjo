@@ -21,6 +21,7 @@ import {
     Edit,
     Trash,
     User,
+    ShieldAlert,
 } from "lucide-react"
 import { formatDistanceToNow, format } from "date-fns"
 import type { ICrimeReport } from "@/types"
@@ -149,6 +150,14 @@ export function DetailedCrimeCard({ report, onVote, userVote, voteCount, isAutho
             </CardHeader>
             <CardContent className="space-y-4">
                 <p className="text-lg">{report.description}</p>
+                
+                <Badge
+                    variant="secondary"
+                    className={`gap-1 ${report.suspicionLevel >= 70 ? "text-red-400" : report.suspicionLevel >= 40 ? "text-yellow-400" : "text-green-400"}`}
+                    >
+                    <ShieldAlert className="h-3 w-3" />
+                    Suspicious:{report.suspicionLevel >= 70 ? "High" : report.suspicionLevel >= 40 ? "Medium" : "Low"}
+                </Badge>
                 <div className="flex items-center space-x-2 text-muted-foreground">
                     <MapPin className="w-4 h-4" />
                     <span>{report.location_name}</span>

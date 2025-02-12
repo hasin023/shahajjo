@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { DetailedCrimeCard } from "@/components/DetailedCrimeCard";
 import { CommentsSection } from "@/components/CommentsSection";
 import { Sidebar } from "@/components/Sidebar";
-import type { CommentWithAuthorProps, ICrimeReport } from "@/types";
+import type { CommentWithAuthorProps, ICrimeReport, IVote } from "@/types";
 import toast from "react-hot-toast";
 
 export default function ReportDetailsPage() {
@@ -17,7 +17,17 @@ export default function ReportDetailsPage() {
   const [isAuthor, setIsAuthor] = useState(false);
   const router = useRouter();
 
+  
   useEffect(() => {
+    if(!crimeReportId) return;
+    fetch(`/api/user/report/vote/${crimeReportId}`)
+      .then((res) => res.json())
+      .then((data: { vote: IVote }) => setUserVote(data?.vote?.vote || null))
+      .catch(console.error);
+  }, [crimeReportId]);
+
+  useEffect(() => {
+    if(!crimeReportId) return;
     fetch(`/api/report/${crimeReportId}/comment`)
       .then((res) => res.json())
       .then((data) => setComments(data.comments || []))

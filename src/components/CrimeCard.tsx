@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig, ImageIcon } from "lucide-react"
+import { MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig, ImageIcon, ShieldAlert } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { ICrimeReport, IVote } from "@/types"
 import CardVoteVertical from "./CardVoteVertical"
@@ -114,6 +114,13 @@ export function CrimeCard({ report }: CrimeCardProps) {
                         >
                             <StatusIcon className="h-3 w-3" />
                             {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                        </Badge>
+                        <Badge
+                            variant="secondary"
+                            className={`gap-1 ${report.suspicionLevel >= 70 ? "text-red-400" : report.suspicionLevel >= 40 ? "text-yellow-400" : "text-green-400"}`}
+                        >
+                            <ShieldAlert className="h-3 w-3" />
+                            Suspicious:{report.suspicionLevel >= 70 ? "High" : report.suspicionLevel >= 40 ? "Medium" : "Low"}
                         </Badge>
                     </div>
                 </div>

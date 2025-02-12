@@ -38,6 +38,8 @@ export interface ICrimeReport {
     status: 'verified' | 'investigating' | 'resolved' | 'not verified' | 'fake',
     crimeTime: Date,
     isAnonymous?: boolean,
+    suspicionLevel: number,
+    isBanned: boolean,
     updatedAt: Date,
     createdAt: Date
     author?: {
