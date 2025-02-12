@@ -58,7 +58,7 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
 
     const images = report.images || []
     const videos = report.videos || []
-
+    console.log(report);
     const openLightbox = (index: number) => {
         setLightboxIndex(index)
         setLightboxOpen(true)
@@ -116,7 +116,7 @@ export function DetailedCrimeCard({ report, onVote, userVote, isAuthor, onEdit, 
                 </div>
 
                 {images.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
                         {images.map((image, index) => (
                             <div
                                 key={index}

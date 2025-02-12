@@ -1,14 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { ArrowBigUp, ArrowBigDown, MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig } from "lucide-react"
+import { MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import type { ICrimeReport } from "@/types"
+import type { ICrimeReport, IVote } from "@/types"
+import { useEffect, useState } from "react"
+import CardVoteVertical from "./CardVoteVertical"
 
 const statusIcons = {
     verified: Shield,
@@ -26,36 +27,16 @@ const statusColors = {
 
 interface CrimeCardProps {
     report: ICrimeReport
-    onVote: (reportId: string, direction: "upvote" | "downvote") => void
-    userVote: "upvote" | "downvote" | null
 }
 
-export function CrimeCard({ report, onVote, userVote }: CrimeCardProps) {
+export function CrimeCard({ report }: CrimeCardProps) {
     const StatusIcon = statusIcons[report.status as keyof typeof statusIcons]
 
     return (
         <Card className="crime-card hover:border-primary transition-colors duration-200">
             <div className="flex">
                 {/* Vote Column */}
-                <div className="flex flex-col items-center p-2 bg-muted rounded-l-lg">
-                    <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => onVote(report._id, "upvote")}
-                        className={`p-1 rounded-full transition-colors ${userVote === "upvote" ? "text-primary" : "text-muted-foreground"
-                            }`}
-                    >
-                        <ArrowBigUp className="h-6 w-6" />
-                    </motion.button>
-                    <span className="font-bold text-sm py-1">{report.upvotes - report.downvotes}</span>
-                    <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => onVote(report._id, "downvote")}
-                        className={`p-1 rounded-full transition-colors ${userVote === "downvote" ? "text-destructive" : "text-muted-foreground"
-                            }`}
-                    >
-                        <ArrowBigDown className="h-6 w-6" />
-                    </motion.button>
-                </div>
+                <CardVoteVertical report={report} />
 
                 {/* Content Column */}
                 <div className="flex-1 p-4">
