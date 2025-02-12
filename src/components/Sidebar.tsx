@@ -24,11 +24,11 @@ const sidebarLinks = [
         icon: Map,
         href: "/map",
     },
-    // {
-    //     title: "Statistics",
-    //     icon: BarChart2,
-    //     href: "/stats",
-    // },
+    {
+        title: "Emergency Contacts",
+        icon: AlertCircle,
+        href: "/emergency-contacts",
+    },
     // {
     //     title: "Settings",
     //     icon: Settings,

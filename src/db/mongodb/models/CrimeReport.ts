@@ -19,6 +19,7 @@ const CrimeReportSchema = new Schema<ICrimeReport>({
   verified: { type: Boolean, default: false }, // Admin verification status
   verificationScore: { type: Number, default: 0 }, // verification score based on votes and verified comments
   crimeTime: { type: Date, required: true, default: Date.now },
+  isAnonymous: { type: Boolean, default: false },
   updatedAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['verified', 'investigating', 'resolved', 'not verified', 'fake'], default: 'not verified' },
   createdAt: { type: Date, default: Date.now }
