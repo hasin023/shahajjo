@@ -13,7 +13,7 @@ import {
   Shield,
   Clock,
   CircleCheckBig,
-  ImageIcon,
+  ImageIcon, ShieldAlert,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import type { ICrimeReport, IVote } from "@/types";
@@ -147,6 +147,13 @@ export function CrimeCard({ report }: CrimeCardProps) {
               <StatusIcon className="h-3 w-3" />
               {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
             </Badge>
+                        <Badge
+                            variant="secondary"
+                            className={`gap-1 ${report.suspicionLevel >= 70 ? "text-red-400" : report.suspicionLevel >= 40 ? "text-yellow-400" : "text-green-400"}`}
+                        >
+                            <ShieldAlert className="h-3 w-3" />
+                            Suspicious:{report.suspicionLevel >= 70 ? "High" : report.suspicionLevel >= 40 ? "Medium" : "Low"}
+                        </Badge>
           </div>
         </div>
       </div>

@@ -54,7 +54,6 @@ export const analyzeFakeReport = async (text: string) => {
 };
 
 
-
 export const detectFakeImage = async (imageUrl: string) => {
     try {
         if (!imageUrl) return;

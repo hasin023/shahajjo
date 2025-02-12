@@ -2,6 +2,7 @@ import { dbConnect } from "@/db/mongodb/connect";
 import Comment from "@/db/mongodb/models/Comment";
 import CrimeReport from "@/db/mongodb/models/CrimeReport";
 import Vote from "@/db/mongodb/models/Vote";
+import { analyzeReport } from '@/libs/analyze-report';
 import { getAuth } from "@/libs/auth";
 import { FILE_DOMAIN } from "@/libs/const";
 import { uploadFile } from "@/libs/file-upload";
@@ -84,6 +85,8 @@ export async function POST(request: NextRequest) {
       isAnonymous,
     });
     await report.save();
+        analyzeReport(report._id, report.title, report.description, report.images);
+
     return NextResponse.json({ message: "Report created successfully" });
   } catch (error) {
     console.error("Error: ", error);
