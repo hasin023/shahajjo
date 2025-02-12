@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
             content,
             replyOf: replyOf || null,
         });
+    
         const authorSubscription = await NotificationSubscription.findOne({ userId: comment.author });
         if (authorSubscription)
         await webpush.sendNotification(

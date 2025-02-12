@@ -41,3 +41,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Something went wrong...' }, { status: 500 });
     }
 }
+
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const loggedInUser = await getAuth(request);
+        if (!loggedInUser)
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        const userId = loggedInUser.id;
+        await dbConnect();
+        await NotificationSubscription.deleteOne({ userId });
+    } catch (error) {
+        console.error('Error: ', error);
+        return NextResponse.json({ error: 'Something went wrong...' }, { status: 500 });
+    }
+}

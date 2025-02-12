@@ -16,8 +16,11 @@ export default function PushSubscription() {
     }, [])
 
     async function subscribe() {
-        if (isSubscribed)
-            return;
+        if (isSubscribed) {
+          const confirmed = confirm("Are you sure you want to unsubscribe?");
+          if(confirmed) await unsubscribe();
+          return;
+        }
 
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
 
@@ -33,6 +36,20 @@ export default function PushSubscription() {
       });
     }
 
+    async function unsubscribe() {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+  
+      if (subscription) {
+        await subscription.unsubscribe();
+        await fetch("/api/user/notification/subscribe", {
+          method: "DELETE",
+        });
+  
+        setIsSubscribed(false);
+      }
+    }
+
     const onSubscribe = () => {
         Notification.requestPermission().then((permission) => {
             if (permission === "granted") subscribe();
@@ -41,5 +58,5 @@ export default function PushSubscription() {
   
   if (!userLoaded) return <span className="text-xs">Loading...</span>
   if (!user) return null;
-  return <Button onClick={onSubscribe}>{isSubscribed ? "UnSubscribe" : "Subscribe"}</Button>;
+  return <Button className="text-xs" onClick={onSubscribe}>{isSubscribed ? "UnSubscribe" : "Subscribe"}</Button>;
 }

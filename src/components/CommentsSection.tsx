@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { formatDistanceToNow } from "date-fns"
-import { IComment } from "@/types"
+import { CommentWithAuthorProps } from "@/types"
 
 interface CommentsSectionProps {
-    comments: IComment[]
+    comments: CommentWithAuthorProps[]
     onCommentSubmit: (content: string) => void
 }
 
@@ -35,14 +35,14 @@ export function CommentsSection({ comments, onCommentSubmit }: CommentsSectionPr
                 </form>
                 <div className="space-y-4">
                     {comments.map((comment) => (
-                        <div key={comment._id} className="flex space-x-4">
+                        <div key={comment._id} className="flex space-x-4 rounded border p-1">
                             <Avatar>
                                 <AvatarImage src={`https://avatar.vercel.sh/${comment.author}`} />
                                 <AvatarFallback>{comment.author[0]}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                                 <div className="flex items-center space-x-2">
-                                    <span className="font-semibold">{comment.author}</span>
+                                    <span className="font-semibold">{comment.authorName}</span>
                                     <span className="text-sm text-muted-foreground">
                                         {formatDistanceToNow(new Date(comment.createdAt))} ago
                                     </span>

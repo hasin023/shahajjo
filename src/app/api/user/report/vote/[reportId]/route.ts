@@ -3,6 +3,10 @@ import { dbConnect } from "@/db/mongodb/connect";
 import Vote from "@/db/mongodb/models/Vote";
 import CrimeReport from "@/db/mongodb/models/CrimeReport";
 import { getAuth } from "@/libs/auth";
+import webpush from "@/libs/webpush";
+import { report } from "process";
+import NotificationSubscription from "@/db/mongodb/models/NotificationSubscription";
+import { PushSubscription } from "web-push";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ reportId: string }> }) {
     try {
@@ -60,7 +64,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await Vote.create({ reportId, userId: loggedInUser.id, vote });
         // Update the crime report's vote count
         const voteIncrement = vote === "upvote" ? { upvotes: 1 } : { downvotes: 1 };
-        await CrimeReport.findByIdAndUpdate(reportId, { $inc: voteIncrement });
+        const report = await CrimeReport.findByIdAndUpdate(reportId, { $inc: voteIncrement });
+        
+        
+        const authorSubscription = await NotificationSubscription.findOne({ userId: report?.reportedBy });
+        if (authorSubscription)
+        await webpush.sendNotification(
+            authorSubscription.subscription as PushSubscription,
+            JSON.stringify({
+              title: "Someone voted on your report!",
+              body: vote === "upvote" ? "Someone upvoted your report" : "Someone downvoted your report",
+            })
+          );
         return NextResponse.json({ message: "ADDED", vote: { reportId, userId: loggedInUser.id, vote } });
     } catch (error) {
         console.error("Error in voting:", error);

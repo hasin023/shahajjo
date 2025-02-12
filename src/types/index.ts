@@ -88,3 +88,8 @@ export interface INotificationSubscription {
     subscription: Object,
     createdAt: Date,   
 }
+
+export interface CommentWithAuthorProps extends IComment {
+    authorName: string
+}
+

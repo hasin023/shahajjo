@@ -41,7 +41,7 @@ export function CrimeCard({ report }: CrimeCardProps) {
                 {/* Content Column */}
                 <div className="flex-1 p-4">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2">
                         <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6 ring-2 ring-primary/10">
                                 <AvatarImage src={report.isAnonymous ? `https://avatar.vercel.sh/${report.reportedBy}` : report.author?.avatar || `https://avatar.vercel.sh/${report.reportedBy}`} />
