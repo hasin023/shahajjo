@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     try {
         const loggedInUser = await getAuth(request);
         if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        if (!loggedInUser.isVerified) return NextResponse.json({ error: 'You need to be verified to post' }, { status: 403 });
+        if (!loggedInUser.isVerified) return NextResponse.json({ error: 'You need to be Verified' }, { status: 403 });
 
         const formData = await request.formData();
         const reportedBy = loggedInUser.id;
@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest) {
         const loggedInUser = await getAuth(request)
         if (!loggedInUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         if (!loggedInUser.isVerified)
-            return NextResponse.json({ error: "You need to be verified to edit reports" }, { status: 403 })
+            return NextResponse.json({ error: "You need to be Verified" }, { status: 403 })
 
         const formData = await request.formData()
         const reportId = formData.get("reportId") as string
@@ -164,7 +164,7 @@ export async function DELETE(request: NextRequest) {
 
         const loggedInUser = await getAuth(request);
         if (!loggedInUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        if (!loggedInUser.isVerified) return NextResponse.json({ error: 'You need to be verified to delete post' }, { status: 403 });
+        if (!loggedInUser.isVerified) return NextResponse.json({ error: 'You need to be Verified' }, { status: 403 });
 
         await dbConnect();
         await CrimeReport.findByIdAndDelete(reportId);

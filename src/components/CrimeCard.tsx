@@ -5,10 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig } from "lucide-react"
+import { MessageSquare, Share2, MapPin, AlertTriangle, Shield, Clock, CircleCheckBig, ImageIcon } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { ICrimeReport, IVote } from "@/types"
-import { useEffect, useState } from "react"
 import CardVoteVertical from "./CardVoteVertical"
 
 const statusIcons = {
@@ -45,15 +44,15 @@ export function CrimeCard({ report }: CrimeCardProps) {
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6 ring-2 ring-primary/10">
-                                <AvatarImage src={report.author?.avatar || `https://avatar.vercel.sh/${report.reportedBy}`} />
-                                <AvatarFallback>{report.reportedBy[0]}</AvatarFallback>
+                                <AvatarImage src={report.isAnonymous ? `https://avatar.vercel.sh/${report.reportedBy}` : report.author?.avatar || `https://avatar.vercel.sh/${report.reportedBy}`} />
+                                <AvatarFallback>{report.isAnonymous ? "A" : report.reportedBy[0]}</AvatarFallback>
                             </Avatar>
                             <span className="text-sm text-muted-foreground">
-                                Reported by{" "}
-                                <span className="font-medium text-foreground">
-                                    {report.author?.name}
-                                </span>{" "}
-                                {formatDistanceToNow(new Date(report.createdAt))} ago
+                                Reported by •
+                                <span className="font-semibold">
+                                    {report.isAnonymous ? "Anonymous" : report.author?.name}
+                                </span>
+                                • {formatDistanceToNow(new Date(report.createdAt))} ago
                             </span>
                         </div>
                         <Badge variant="outline" className="gap-1">
@@ -109,8 +108,8 @@ export function CrimeCard({ report }: CrimeCardProps) {
                                 Share
                             </Button>
                         </div>
-                        <Badge 
-                            variant="secondary" 
+                        <Badge
+                            variant="secondary"
                             className={`gap-1 ${statusColors[report.status as keyof typeof statusColors]}`}
                         >
                             <StatusIcon className="h-3 w-3" />
