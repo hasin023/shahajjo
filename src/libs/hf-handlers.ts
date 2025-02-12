@@ -32,3 +32,47 @@ const convertImageToBlob = async (imageFile: File) => {
 
     return imageBlob
 }
+
+export const analyzeFakeReport = async (text: string) => {
+    try {
+        if (!text.trim()) return;
+
+        // Defining candidate labels
+        const candidateLabels = ["fake", "real"];  // Labels for classification
+
+        // Make the request with the required parameter
+        const output = await hf.textClassification({
+            data: text,
+            model: "j-hartmann/emotion-english-distilroberta-base", // Replace with your model
+            candidate_labels: candidateLabels,
+        });
+
+        return output;
+    } catch (error) {
+        console.error("Error in analyzeFakeReport:", error);
+    }
+};
+
+
+
+export const detectFakeImage = async (imageUrl: string) => {
+    try {
+        if (!imageUrl) return;
+
+        // Fetch the image from the URL
+        const imageResponse = await fetch(imageUrl);
+        const imageBlob = await imageResponse.blob();  // Convert image URL to Blob
+
+        // Pass the Blob to the model for detection
+        const output = await hf.imageClassification({
+            data: imageBlob,
+            model: "microsoft/dit-base-finetuned-rvlcdip" // Change this to a better deepfake detection model if available
+        });
+
+        return output;
+    } catch (error) {
+        console.error("AI Image Fake Detection Error:", error);
+    }
+};
+
+
